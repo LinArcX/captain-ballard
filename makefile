@@ -1,5 +1,5 @@
-TARGET = main
-LIBS = `pkg-config --cflags --libs libgit2`
+TARGET = captain_ballard
+LIBS = `pkg-config --cflags --libs libgit2 glfw3 gl glu`
 CC = gcc
 CFLAGS = -g -Wall
 ODIR = ./build
