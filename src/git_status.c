@@ -1,31 +1,7 @@
 #include "cb_vector.h"
 #include "git_status.h"
 
-int show_status_of_git_repo(char **files) {
-  char *address;
-  int error = 0;
-
-  git_libgit2_init();
-  git_repository *rep;
-  git_status_list *statuses;
-
-  address = files[0];
-
-  error = git_repository_open(&rep, address);
-  if (error < 0) {
-    const git_error *e = giterr_last();
-    printf("Error: %d : %s", e->klass, e->message);
-    goto SHUTDOWN;
-  }
-  lg2_status(rep, files);
-
-SHUTDOWN:
-  git_repository_free(rep);
-  git_libgit2_shutdown();
-  return 0;
-}
-
-int lg2_status(git_repository *repo, char **files) {
+int project_status(git_repository *repo, char **files) {
   git_status_list *status;
   struct opts o = {GIT_STATUS_OPTIONS_INIT, "."};
 
@@ -53,10 +29,10 @@ show_status:
 
 static void print_short(git_repository *repo, git_status_list *status,
                         char **files) {
+  char istatus, wstatus;
   size_t i, maxi = git_status_list_entrycount(status);
   const git_status_entry *s;
-  char istatus, wstatus;
-  const char *extra, *c;
+  const char *c;
 
   for (i = 0; i < maxi; ++i) {
     s = git_status_byindex(status, i);
@@ -69,12 +45,35 @@ static void print_short(git_repository *repo, git_status_list *status,
       c = s->index_to_workdir->new_file.path;
     }
     vector_push_back(files, (char *)c);
+  }
 
-    // printf("%s\n", c);
-  }
-  for (i = 0; i < maxi; ++i) {
-    s = git_status_byindex(status, i);
-    if (s->status == GIT_STATUS_WT_NEW)
-      printf("?? %s\n", s->index_to_workdir->old_file.path);
-  }
+  //  for (i = 0; i < maxi; ++i) {
+  //    s = git_status_byindex(status, i);
+  //    if (s->status == GIT_STATUS_WT_NEW)
+  //      printf("?? %s\n", s->index_to_workdir->old_file.path);
+  //  }
 }
+
+// int show_status_of_git_repo(char **files) {
+//  char *address;
+//  int error = 0;
+//
+//  git_libgit2_init();
+//  git_repository *rep;
+//  git_status_list *statuses;
+//
+//  address = files[0];
+//
+//  error = git_repository_open(&rep, address);
+//  if (error < 0) {
+//    const git_error *e = giterr_last();
+//    printf("Error: %d : %s", e->klass, e->message);
+//    goto SHUTDOWN;
+//  }
+//  lg2_status(rep, files);
+//
+// SHUTDOWN:
+//  git_repository_free(rep);
+//  git_libgit2_shutdown();
+//  return 0;
+//}

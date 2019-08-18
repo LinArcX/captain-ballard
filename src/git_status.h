@@ -25,6 +25,6 @@ struct opts {
 };
 
 static void print_short(git_repository *repo, git_status_list *status, char** files);
-int show_status_of_git_repo(char** files);
+//int show_status_of_git_repo(char** files);
 
 #endif

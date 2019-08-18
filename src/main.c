@@ -43,18 +43,31 @@ int check_projects() {
     while (fgets(buf, sizeof(buf), fp) != NULL) {
         buf[strlen(buf) - 1] = '\0'; // eat the newline fgets() stores
         vector_push_back(files, buf);
-        show_status_of_git_repo(files);
+
+        error = git_repository_open(&rep, files[0]);
+        if (error < 0) {
+            const git_error *e = giterr_last();
+            printf("Error: %d : %s", e->klass, e->message);
+            goto SHUTDOWN;
+        }
+        project_status(rep, files);
+
         vector_push_back(projects, files);
-    }
 
-
-    if(projects) {
-        for(size_t i = 0; i < vector_size(projects); ++i) {
-            for(size_t j = 0; j < vector_size(files); ++j) {
-                printf("v[%lu][%lu] = %s\n", i, j,  projects[i][j]);
+        if(projects) {
+            for(size_t i = 0; i < vector_size(projects); ++i) {
+                for(size_t j = 0; j < vector_size(files); ++j) {
+                    printf("v[%lu][%lu] = %s\n", i, j,  projects[i][j]);
+                }
             }
         }
+
+        files = NULL;
     }
+
+SHUTDOWN:
+    git_repository_free(rep);
+    git_libgit2_shutdown();
 
     /* well, we don't have destructors, so let's clean things up */
     vector_free(files);
@@ -63,6 +76,8 @@ int check_projects() {
     fclose(fp);
     return 0;
 }
+
+//show_status_of_git_repo(files);
 
 //#include <git2.h>
 //#include <stdio.h>
