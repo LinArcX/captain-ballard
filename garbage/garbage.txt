@@ -1,0 +1,111 @@
+//void daemon_signal_handler(int sig);
+//void log_message(char *filename,char *message);
+
+
+//#include <signal.h>
+//#include <stdio.h>
+//#include <string.h>
+
+//#define RUNNING_DIR "/home/linarcx"
+//#define LOCK_FILE "daemond.lock"
+//#define LOG_FILE "daemond.log"
+
+// void daemon_signal_handler(int sig) {
+//  switch (sig) {
+//  case SIGHUP:
+//    log_message(LOG_FILE, "Hangup Signal Catched.\n");
+//    exit(0);
+//    break;
+//  case SIGINT:
+//    log_message(LOG_FILE, "Interactive Attention Signal Catched.\n");
+//    exit(0);
+//    break;
+//  case SIGKILL:
+//    log_message(LOG_FILE, "Killed Signal Catched.\n");
+//    exit(0);
+//    break;
+//  case SIGTERM:
+//    show_nuklear_window();
+//    log_message(LOG_FILE, "Terminate Signal Catched.\n");
+//    exit(0);
+//    break;
+//  }
+//}
+//
+
+//    chdir(RUNNING_DIR);
+//
+//    sprintf(str, "%d\n", getpid());
+//    write(lfp, str, strlen(str));
+
+//    lfp = open(LOCK_FILE, O_RDWR | O_CREAT, 0640);
+//    if (lfp < 0)
+//        exit(1);
+//    if (lockf(lfp, F_TLOCK, 0) < 0)
+//        exit(1);
+
+//  signal(SIGCHLD, SIG_IGN);
+//  signal(SIGTSTP, SIG_IGN);
+//  signal(SIGTTOU, SIG_IGN);
+//  signal(SIGTTIN, SIG_IGN);
+
+//  signal(SIGHUP, daemon_signal_handler);
+//  signal(SIGTERM, daemon_signal_handler);
+//  signal(SIGINT, daemon_signal_handler);
+//  signal(SIGKILL, daemon_signal_handler);
+
+
+
+
+
+// detailed
+// opt.flags = GIT_STATUS_OPT_DEFAULTS;
+// error = git_status_list_new(&statuses, rep, &opt);
+// if (error < 0)
+//{
+//    const git_error *e = giterr_last();
+//    std::cout << "Error: " << error << " / " << e->klass << " : " <<
+//    e->message << std::endl;
+
+//    goto SHUTDOWN;
+//}
+
+// count = git_status_list_entrycount(statuses);
+// std::cout<< "count: " << count << std::endl;
+// for (size_t i = 0; i < count; ++i)
+//{
+//    const git_status_entry* entry = git_status_byindex(statuses, i);
+//    std::cout<<"status: " << entry->index_to_workdir->status << "\tpath: "
+//    << entry->index_to_workdir->new_file.path << std::endl;
+//}
+
+// git_status_list_free(statuses);
+
+
+//unsigned int x_hours = 0;
+//unsigned int x_minutes = 0;
+//unsigned int x_seconds = 0;
+//unsigned int x_milliseconds = 0;
+
+//unsigned int totaltime = 0;
+//unsigned int count_down_time_in_secs = 10; // 1 minute is 60, 1 hour is 3600
+//unsigned int time_left = 0;
+
+//clock_t x_startTime;
+//clock_t x_countTime;
+
+//x_startTime = clock();                           // start clock
+//time_left = count_down_time_in_secs - x_seconds; // update timer
+
+//while (time_left > 0) {
+//    x_countTime = clock(); // update timer difference
+//    x_milliseconds = x_countTime - x_startTime;
+//    x_seconds = (x_milliseconds / (CLOCKS_PER_SEC)) - (x_minutes * 60);
+//    x_minutes = (x_milliseconds / (CLOCKS_PER_SEC)) / 60;
+//    x_hours = x_minutes / 60;
+//    time_left =
+//        count_down_time_in_secs - x_seconds; // subtract to get difference
+//    // printf( "\nYou have %d seconds left ( %d ) count down timer by
+//    // TopCoder",time_left,count_down_time_in_secs);
+//}
+
