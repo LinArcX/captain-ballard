@@ -28,21 +28,22 @@ int check_projects() {
     strcat(full_address, user_name);
     strcat(full_address, primitive_path);
 
-    FILE *fp;
-    char buf[bufSize];
-    if ((fp = fopen(full_address, "r")) == NULL) {
-        perror("fopen source-file");
-        return 1;
-    }
-
     int error = 0;
     git_libgit2_init();
     git_repository *rep;
     git_status_list *statuses;
 
-    while (fgets(buf, sizeof(buf), fp) != NULL) {
-        buf[strlen(buf) - 1] = '\0'; // eat the newline fgets() stores
-        vector_push_back(files, buf);
+    FILE *fp;
+    char* buffer;
+    buffer = malloc (bufSize * 50);
+    if ((fp = fopen(full_address, "r")) == NULL) {
+        perror("fopen source-file");
+        return 1;
+    }
+
+    while (fgets(buffer, 255, (FILE *)fp)) {
+        buffer[strlen(buffer) - 1] = '\0'; // eat the newline fgets() stores
+        vector_push_back(files, buffer);
 
         error = git_repository_open(&rep, files[0]);
         if (error < 0) {
@@ -50,11 +51,11 @@ int check_projects() {
             printf("Error: %d : %s", e->klass, e->message);
             goto SHUTDOWN;
         }
-        project_status(rep, files);
+        project_status(rep, &*files);
 
         vector_push_back(projects, files);
 
-        if(projects) {
+        if(projects && files && vector_size(files) > 1) {
             for(size_t i = 0; i < vector_size(projects); ++i) {
                 for(size_t j = 0; j < vector_size(files); ++j) {
                     printf("v[%lu][%lu] = %s\n", i, j,  projects[i][j]);
@@ -229,5 +230,16 @@ SHUTDOWN:
 //vector_push_back(files, "max");
 //vector_push_back(files, "james");
 //vector_pop_back(files);
+
+
+// FILE *fp;
+// char* buffer;
+
+// fp = fopen(path, "r");
+// while (fgets(buffer, 255, (FILE *)fp)) {
+//     printf("%s\n", buffer);
+// }
+
+// //    while (fgets(buf, sizeof(buf), fp) != NULL) {
 
 

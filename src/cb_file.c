@@ -1,6 +1,7 @@
 #include "cb_array.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define bufSize 1024
 
@@ -11,25 +12,37 @@ void write_char_to_file(char *address, char *str) {
     fclose(fptr);
 }
 
-int read_file_line_by_line(char *path, Array *a) {
+int read_file_line_by_line(char *path) {
     FILE *fp;
-    char buf[bufSize];
-    if ((fp = fopen(path, "r")) == NULL) {
-        /* Open source file. */
-        perror("fopen source-file");
-        return 1;
-    }
+    //char buffer[255];
+    char* buffer;
+    buffer = malloc (bufSize * 50);
 
-    initArray(a, 1); // initially 5 elements
-    while (fgets(buf, sizeof(buf), fp) != NULL) {
-        buf[strlen(buf) - 1] = '\0'; // eat the newline fgets() stores
-        insertArray(a, &buf);         // automatically resizes as necessary
-        printf("%s\n", buf);
-        printf("Internal Size: %d", a->used);
+    fp = fopen(path, "r");
+    while (fgets(buffer, 255, (FILE *)fp)) {
+        printf("%s\n", buffer);
     }
     fclose(fp);
     return 0;
 }
+
+//    FILE *fp;
+//    char buf[bufSize];
+//    if ((fp = fopen(path, "r")) == NULL) {
+//        /* Open source file. */
+//        perror("fopen source-file");
+//        return 1;
+//    }
+//
+//    initArray(a, 1); // initially 5 elements
+//    while (fgets(buf, sizeof(buf), fp) != NULL) {
+//        buf[strlen(buf) - 1] = '\0'; // eat the newline fgets() stores
+//        insertArray(a, &buf);         // automatically resizes as necessary
+//        printf("%s\n", buf);
+//        printf("Internal Size: %d", a->used);
+//    }
+//    fclose(fp);
+//    return 0;
 
 //  int i = 0;
 //  for (i = 0; i < 100; i++) {
