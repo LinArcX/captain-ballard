@@ -23,7 +23,6 @@ int main() {
     strcat(full_address, user_name);
     strcat(full_address, primitive_path);
 
-
     int db_status = open_db(&db, full_address);
     if(db_status){
         // Create table
@@ -51,7 +50,8 @@ int main() {
                 &stmt, NULL);
 
         while ( (rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-            char *project_name = (char*)sqlite3_column_text(stmt, 0);
+            char *project_name = malloc (sizeof(char) * bufSize);
+            strcpy(project_name, sqlite3_column_text(stmt, 0));
             vector_push_back(files, project_name);
             check_projects(project_name);
         }
@@ -129,9 +129,6 @@ SHUTDOWN:
 //buffer = NULL;
 //vector_free(files);
 
-
-
-
 //    FILE *fp;
 //    char* buffer;
 //    buffer = malloc (bufSize * 50);
@@ -158,3 +155,9 @@ SHUTDOWN:
 //    char* delete_sql = "DELETE from COMPANY where ID=2; " \
 //                        "SELECT * from COMPANY";
 //    exec_sql(&db, delete_sql);
+
+
+//if(project_titles){
+//    for(size_t i=0; i < vector_size(project_titles); i++)
+//        printf("\nTitle: %s", project_titles[i]);
+//}
