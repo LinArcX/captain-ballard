@@ -1,5 +1,5 @@
 TARGET = captain_ballard
-LIBS = `pkg-config --cflags --libs libgit2 glfw3 gl glu`
+LIBS = `pkg-config --cflags --libs libgit2 glfw3 gl glu sqlite3`
 CC = gcc
 CFLAGS = -g -Wall
 ODIR = ./build

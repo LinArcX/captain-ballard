@@ -1,5 +1,5 @@
-#ifndef CB_ARRAY_H
-#define CB_ARRAY_H
+#ifndef CB_COMMON_H
+#define CB_COMMON_H
 
 #include <fcntl.h>
 #include <git2.h>
@@ -37,6 +37,29 @@
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(*x))
 #define UNUSED(x) (void)(x)
+#define MAX_PATHSPEC 8
+
+enum {
+    FORMAT_DEFAULT = 0,
+    FORMAT_LONG = 1,
+    FORMAT_SHORT = 2,
+    FORMAT_PORCELAIN = 3,
+};
+
+struct opts {
+    git_status_options statusopt;
+    char *repodir;
+    char *pathspec[MAX_PATHSPEC];
+    int npaths;
+    int format;
+    int zterm;
+    int showbranch;
+    int showsubmod;
+    int repeat;
+};
+
+static void print_short(git_repository *repo, git_status_list *status,
+        char **files);
 
 extern int lg2_add(git_repository *repo, int argc, char **argv);
 extern int lg2_blame(git_repository *repo, int argc, char **argv);
@@ -95,12 +118,12 @@ extern size_t is_prefixed(const char *str, const char *pfx);
 extern int is_integer(int *out, const char *str, int allow_negative);
 
 struct args_info {
-  int argc;
-  char **argv;
-  int pos;
+    int argc;
+    char **argv;
+    int pos;
 };
 #define ARGS_INFO_INIT                                                         \
-  { argc, argv, 0 }
+{ argc, argv, 0 }
 
 /**
  * Check current `args` entry against `opt` string.  If it matches
@@ -109,7 +132,7 @@ struct args_info {
  * default value `def` will be given. otherwise return 0.
  */
 extern int optional_str_arg(const char **out, struct args_info *args,
-                            const char *opt, const char *def);
+        const char *opt, const char *def);
 
 /**
  * Check current `args` entry against `opt` string.  If it matches
@@ -117,7 +140,7 @@ extern int optional_str_arg(const char **out, struct args_info *args,
  * an equal sign, take the remainder as a string; otherwise return 0.
  */
 extern int match_str_arg(const char **out, struct args_info *args,
-                         const char *opt);
+        const char *opt);
 
 /**
  * Check current `args` entry against `opt` string parsing as uint16.  If
@@ -126,7 +149,7 @@ extern int match_str_arg(const char **out, struct args_info *args,
  * uint16_t value; otherwise return 0.
  */
 extern int match_uint16_arg(uint16_t *out, struct args_info *args,
-                            const char *opt);
+        const char *opt);
 
 /**
  * Check current `args` entry against `opt` string parsing as uint32.  If
@@ -135,7 +158,7 @@ extern int match_uint16_arg(uint16_t *out, struct args_info *args,
  * uint32_t value; otherwise return 0.
  */
 extern int match_uint32_arg(uint32_t *out, struct args_info *args,
-                            const char *opt);
+        const char *opt);
 
 /**
  * Check current `args` entry against `opt` string parsing as int.  If
@@ -144,7 +167,7 @@ extern int match_uint32_arg(uint32_t *out, struct args_info *args,
  * int value; otherwise return 0.
  */
 extern int match_int_arg(int *out, struct args_info *args, const char *opt,
-                         int allow_negative);
+        int allow_negative);
 
 /**
  * Check current `args` entry against a "bool" `opt` (ie. --[no-]progress).
@@ -160,14 +183,14 @@ extern int match_bool_arg(int *out, struct args_info *args, const char *opt);
  * Pass `FILE*` such as `stdout` or `stderr` as payload (or NULL == `stdout`)
  */
 extern int diff_output(const git_diff_delta *, const git_diff_hunk *,
-                       const git_diff_line *, void *);
+        const git_diff_line *, void *);
 
 /**
  * Convert a treeish argument to an actual tree; this will call check_lg2
  * and exit the program if `treeish` cannot be resolved to a tree
  */
 extern void treeish_to_tree(git_tree **out, git_repository *repo,
-                            const char *treeish);
+        const char *treeish);
 
 /**
  * A realloc that exits on failure
@@ -178,12 +201,12 @@ extern void *xrealloc(void *oldp, size_t newsz);
  * Convert a refish to an annotated commit.
  */
 extern int resolve_refish(git_annotated_commit **commit, git_repository *repo,
-                          const char *refish);
+        const char *refish);
 
 /**
  * Acquire credentials via command line
  */
 extern int cred_acquire_cb(git_cred **out, const char *url,
-                           const char *username_from_url,
-                           unsigned int allowed_types, void *payload);
+        const char *username_from_url,
+        unsigned int allowed_types, void *payload);
 #endif
