@@ -31,7 +31,7 @@ int main() {
         char *create_table_projects = "CREATE TABLE projects("
             "ID INT PRIMARY KEY     NOT NULL,"
             "path           TEXT    NOT NULL);";
-        table_creatad = exec_sql(&db, create_table_projects);
+        //table_creatad = exec_sql(&db, create_table_projects);
 
         // Insert into table
         char *insert_sql = "INSERT INTO projects (ID,path) "
@@ -42,7 +42,7 @@ int main() {
             "VALUES (3, '/mnt/D/WorkSpace/C/CaptainBallard'); "
             "INSERT INTO projects (ID,path)"
             "VALUES (4, '/mnt/D/WorkSpace/C/ncurses_tutorial'); ";
-        exec_sql(&db, insert_sql);
+        //exec_sql(&db, insert_sql);
 
         sqlite3_stmt *stmt;
         int rc;
@@ -58,21 +58,22 @@ int main() {
         }
 
         sqlite3_finalize(stmt);
-        show_nuklear_window(&*projects);
+        // show_nuklear_window(&*projects);
 
         // daemonize();
         // while (1) {
         //    sleep(10);
         //}
 
-        //    if (projects) {
-        //      for (size_t i = 0; i < vector_size(projects); i++) {
-        //        for (size_t j = 0; j < vector_size(projects[i]); j++) {
-        //          printf("v[%lu][%lu] = %s\n", i, j, projects[i][j]);
-        //        }
-        //      }
-        //    }
+        if (projects) {
+            for (size_t i = 0; i < vector_size(projects); i++) {
+                for (size_t j = 0; j < vector_size(projects[i]); j++) {
+                    printf("v[%lu][%lu] = %s\n", i, j, projects[i][j]);
+                }
+            }
+        }
 
+        //vector_free(files);
         vector_free(projects);
         sqlite3_close(db);
         return 0;
@@ -114,15 +115,24 @@ int check_projects(char *address) {
     for (i = 0; i < maxi; ++i) {
         s = git_status_byindex(status, i);
         c = NULL;
-        if (s->status == GIT_STATUS_CURRENT)
+        if (s->status == GIT_STATUS_CURRENT){
             continue;
-        if (s->index_to_workdir) {
-            c = s->index_to_workdir->new_file.path;
         }
-        vector_push_back(files, (char *)c);
+        if(s->status == GIT_STATUS_INDEX_NEW){
+            //c = s->index_to_workdir->new_file.path;
+            c = s->head_to_index->new_file.path;
+            vector_push_back(files, (char *)c);
+        }
+        if(s->status == GIT_STATUS_WT_NEW){
+            c = s->index_to_workdir->new_file.path;
+            vector_push_back(files, (char *)c);
+        }
+        //if (s->index_to_workdir) {
+        //}
     }
     vector_push_back(projects, files);
     files = NULL;
+
 SHUTDOWN:
     git_repository_free(rep);
     git_libgit2_shutdown();

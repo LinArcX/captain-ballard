@@ -22,6 +22,7 @@
 #include "../libs/nuklear/nuklear.h"
 #include "nuklear_glfw_gl2.h"
 #include "cb_vector.h"
+#include "git_common.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -89,14 +90,20 @@ int show_nuklear_window(char ***projects) {
                                 nk_checkbox_label(ctx, projects[i][j], &titlebar);
                                 //printf("v[%lu][%lu] = %s\n", i, j, projects[i][j]);
                             }
+
                             nk_layout_row_static(ctx, 30, 100, 3);
-                            if (nk_button_label(ctx, "Add")){
-                                fprintf(stdout, "Files added!\n");
-                            }
-                            nk_button_set_behavior(ctx, NK_BUTTON_REPEATER);
                             if (nk_button_label(ctx, "Commit")){
-                                fprintf(stdout, "Files commited!\n");
+                                for (size_t j = 1; j < vector_size(projects[i]); j++) {
+                                    fprintf(stdout, "Files commited!\n");
+                                    git_add(projects[i][0], projects[i][j]);
+                                }
+
                             }
+                            //if (nk_button_label(ctx, "Add")){
+                            //    fprintf(stdout, "Files added! %s\n", projects[i][0]);
+                            //}
+                            //nk_button_set_behavior(ctx, NK_BUTTON_REPEATER);
+
                         }else{
                             nk_label(ctx, "This project is clean :)", NK_TEXT_LEFT);
                         }

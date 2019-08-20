@@ -60,6 +60,7 @@ struct opts {
 
 static void print_short(git_repository *repo, git_status_list *status,
         char **files);
+int git_add(const char* path, char* file);
 
 extern int lg2_add(git_repository *repo, int argc, char **argv);
 extern int lg2_blame(git_repository *repo, int argc, char **argv);
