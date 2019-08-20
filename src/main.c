@@ -1,3 +1,4 @@
+#include "cb_nuklear.h"
 #include "cb_util.h"
 #include "cb_vector.h"
 #include "git_common.h"
@@ -7,8 +8,8 @@
 #define LOGARITHMIC_GROWTH
 #define LOG_FILE "/home/linarcx/captain_ballard.log"
 
-char** files = NULL;
-char*** projects= NULL;
+char **files = NULL;
+char ***projects = NULL;
 int check_projects();
 
 int main() {
@@ -24,63 +25,64 @@ int main() {
     strcat(full_address, primitive_path);
 
     int db_status = open_db(&db, full_address);
-    if(db_status){
+    if (db_status) {
         // Create table
         int table_creatad = 0;
-        char *create_table_projects = "CREATE TABLE projects(" \
-                                       "ID INT PRIMARY KEY     NOT NULL," \
-                                       "path           TEXT    NOT NULL);";
+        char *create_table_projects = "CREATE TABLE projects("
+            "ID INT PRIMARY KEY     NOT NULL,"
+            "path           TEXT    NOT NULL);";
         table_creatad = exec_sql(&db, create_table_projects);
 
         // Insert into table
-        char *insert_sql = "INSERT INTO projects (ID,path) " \
-                            "VALUES (1, '/mnt/D/WorkSpace/C/NeoDM'); " \
-                            "INSERT INTO projects (ID,path) " \
-                            "VALUES (2, '/mnt/D/WorkSpace/C/learning_c'); " \
-                            "INSERT INTO projects (ID,path)" \
-                            "VALUES (3, '/mnt/D/WorkSpace/C/CaptainBallard'); " \
-                            "INSERT INTO projects (ID,path)" \
-                            "VALUES (4, '/mnt/D/WorkSpace/C/ncurses_tutorial'); ";
+        char *insert_sql = "INSERT INTO projects (ID,path) "
+            "VALUES (1, '/mnt/D/WorkSpace/C/NeoDM'); "
+            "INSERT INTO projects (ID,path) "
+            "VALUES (2, '/mnt/D/WorkSpace/C/learning_c'); "
+            "INSERT INTO projects (ID,path)"
+            "VALUES (3, '/mnt/D/WorkSpace/C/CaptainBallard'); "
+            "INSERT INTO projects (ID,path)"
+            "VALUES (4, '/mnt/D/WorkSpace/C/ncurses_tutorial'); ";
         exec_sql(&db, insert_sql);
 
         sqlite3_stmt *stmt;
         int rc;
 
-        sqlite3_prepare_v2(db, "select distinct path from projects", -1,
-                &stmt, NULL);
+        sqlite3_prepare_v2(db, "select distinct path from projects", -1, &stmt,
+                NULL);
 
-        while ( (rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-            char *project_name = malloc (sizeof(char) * bufSize);
+        while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+            char *project_name = malloc(sizeof(char) * bufSize);
             strcpy(project_name, sqlite3_column_text(stmt, 0));
             vector_push_back(files, project_name);
             check_projects(project_name);
         }
 
         sqlite3_finalize(stmt);
+        show_nuklear_window(&*projects);
 
         // daemonize();
         // while (1) {
         //    sleep(10);
         //}
 
-        if(projects) {
-            for(size_t i = 0; i < vector_size(projects); i++) {
-                for(size_t j = 0; j < vector_size(projects[i]); j++) {
-                    printf("v[%lu][%lu] = %s\n", i, j, projects[i][j]);
-                }
-            }
-        }
+        //    if (projects) {
+        //      for (size_t i = 0; i < vector_size(projects); i++) {
+        //        for (size_t j = 0; j < vector_size(projects[i]); j++) {
+        //          printf("v[%lu][%lu] = %s\n", i, j, projects[i][j]);
+        //        }
+        //      }
+        //    }
 
         vector_free(projects);
         sqlite3_close(db);
         return 0;
-    }else{
+    } else {
         sqlite3_close(db);
         return 1;
     }
 }
 
-int check_projects(char* address) {
+int check_projects(char *address) {
     int error = 0;
     git_libgit2_init();
     git_repository *rep;
@@ -94,13 +96,16 @@ int check_projects(char* address) {
     }
 
     git_status_list *status;
-    if (git_repository_is_bare(rep)){
+    if (git_repository_is_bare(rep)) {
         fatal("Cannot report status on bare repository", git_repository_path(rep));
     }
     struct opts o = {GIT_STATUS_OPTIONS_INIT, "."};
     o.statusopt.show = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
-    o.statusopt.flags = GIT_STATUS_OPT_INCLUDE_UNTRACKED | GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX | GIT_STATUS_OPT_SORT_CASE_SENSITIVELY;
-    check_lg2(git_status_list_new(&status, rep, &o.statusopt), "Could not get status", NULL);
+    o.statusopt.flags = GIT_STATUS_OPT_INCLUDE_UNTRACKED |
+        GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX |
+        GIT_STATUS_OPT_SORT_CASE_SENSITIVELY;
+    check_lg2(git_status_list_new(&status, rep, &o.statusopt),
+            "Could not get status", NULL);
 
     size_t i, maxi = git_status_list_entrycount(status);
     const git_status_entry *s;
@@ -114,7 +119,7 @@ int check_projects(char* address) {
         if (s->index_to_workdir) {
             c = s->index_to_workdir->new_file.path;
         }
-        vector_push_back(files, (char*)c);
+        vector_push_back(files, (char *)c);
     }
     vector_push_back(projects, files);
     files = NULL;
@@ -124,10 +129,10 @@ SHUTDOWN:
     return 0;
 }
 
-//memset(&buffer[0], 0, sizeof(buffer));
-//free(buffer);
-//buffer = NULL;
-//vector_free(files);
+// memset(&buffer[0], 0, sizeof(buffer));
+// free(buffer);
+// buffer = NULL;
+// vector_free(files);
 
 //    FILE *fp;
 //    char* buffer;
@@ -138,10 +143,9 @@ SHUTDOWN:
 //    }
 //
 //    while (fgets(buffer, 255, (FILE *)fp)) {
-//buffer[strlen(buffer) - 1] = '\0'; // eat the newline fgets() stores
+// buffer[strlen(buffer) - 1] = '\0'; // eat the newline fgets() stores
 
-
-//fclose(fp);
+// fclose(fp);
 //    // Select from a table
 //    char *select_sql = "SELECT * from COMPANY";
 //    exec_sql(&db, select_sql);
@@ -156,8 +160,7 @@ SHUTDOWN:
 //                        "SELECT * from COMPANY";
 //    exec_sql(&db, delete_sql);
 
-
-//if(project_titles){
+// if(project_titles){
 //    for(size_t i=0; i < vector_size(project_titles); i++)
 //        printf("\nTitle: %s", project_titles[i]);
 //}
