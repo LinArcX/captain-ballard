@@ -8,8 +8,14 @@
 #define LOGARITHMIC_GROWTH
 #define LOG_FILE "/home/linarcx/captain_ballard.log"
 
-char **files = NULL;
-char ***projects = NULL;
+char **project_names = NULL;
+
+char **staged_files = NULL;
+char ***staged = NULL;
+
+char **unstaged_files = NULL;
+char ***unstaged = NULL;
+
 int check_projects();
 
 int main() {
@@ -53,28 +59,43 @@ int main() {
         while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
             char *project_name = malloc(sizeof(char) * bufSize);
             strcpy(project_name, sqlite3_column_text(stmt, 0));
-            vector_push_back(files, project_name);
+            vector_push_back(project_names, project_name);
             check_projects(project_name);
         }
 
         sqlite3_finalize(stmt);
-        // show_nuklear_window(&*projects);
+        //show_nuklear_window(&**projects);
 
         // daemonize();
         // while (1) {
         //    sleep(10);
         //}
 
-        if (projects) {
-            for (size_t i = 0; i < vector_size(projects); i++) {
-                for (size_t j = 0; j < vector_size(projects[i]); j++) {
-                    printf("v[%lu][%lu] = %s\n", i, j, projects[i][j]);
+        if (unstaged) {
+            for (size_t i = 0; i < vector_size(unstaged); i++) {
+                for (size_t j = 0; j < vector_size(unstaged[i]); j++) {
+                    printf("unstaged[%lu][%lu] = %s\n", i, j, unstaged[i][j]);
                 }
             }
         }
 
-        //vector_free(files);
-        vector_free(projects);
+        if (staged) {
+            for (size_t i = 0; i < vector_size(staged); i++) {
+                for (size_t j = 0; j < vector_size(staged[i]); j++) {
+                    printf("staged[%lu][%lu] = %s\n", i, j, staged[i][j]);
+                }
+            }
+        }
+
+        if (project_names) {
+            for (size_t i = 0; i < vector_size(project_names); i++) {
+                printf("project[%lu] = %s\n", i, project_names[i]);
+            }
+        }
+
+        vector_free(unstaged);
+        vector_free(staged);
+        vector_free(project_names);
         sqlite3_close(db);
         return 0;
     } else {
@@ -100,6 +121,7 @@ int check_projects(char *address) {
     if (git_repository_is_bare(rep)) {
         fatal("Cannot report status on bare repository", git_repository_path(rep));
     }
+
     struct opts o = {GIT_STATUS_OPTIONS_INIT, "."};
     o.statusopt.show = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
     o.statusopt.flags = GIT_STATUS_OPT_INCLUDE_UNTRACKED |
@@ -108,9 +130,9 @@ int check_projects(char *address) {
     check_lg2(git_status_list_new(&status, rep, &o.statusopt),
             "Could not get status", NULL);
 
-    size_t i, maxi = git_status_list_entrycount(status);
-    const git_status_entry *s;
     const char *c;
+    const git_status_entry *s;
+    size_t i, maxi = git_status_list_entrycount(status);
 
     for (i = 0; i < maxi; ++i) {
         s = git_status_byindex(status, i);
@@ -119,25 +141,28 @@ int check_projects(char *address) {
             continue;
         }
         if(s->status == GIT_STATUS_INDEX_NEW){
-            //c = s->index_to_workdir->new_file.path;
             c = s->head_to_index->new_file.path;
-            vector_push_back(files, (char *)c);
+            vector_push_back(staged_files, (char *)c);
         }
         if(s->status == GIT_STATUS_WT_NEW){
             c = s->index_to_workdir->new_file.path;
-            vector_push_back(files, (char *)c);
+            vector_push_back(unstaged_files, (char *)c);
         }
-        //if (s->index_to_workdir) {
-        //}
     }
-    vector_push_back(projects, files);
-    files = NULL;
+
+    vector_push_back(unstaged, unstaged_files);
+    vector_push_back(staged, staged_files);
+    unstaged_files = NULL;
+    staged_files = NULL;
 
 SHUTDOWN:
     git_repository_free(rep);
     git_libgit2_shutdown();
     return 0;
 }
+
+//if (s->index_to_workdir) {
+//}
 
 // memset(&buffer[0], 0, sizeof(buffer));
 // free(buffer);
@@ -174,3 +199,15 @@ SHUTDOWN:
 //    for(size_t i=0; i < vector_size(project_titles); i++)
 //        printf("\nTitle: %s", project_titles[i]);
 //}
+
+
+//for (size_t k = 0; k < vector_size(projects[i][j]); k++) {
+//printf("vector_size(project): %d", (int)vector_size(projects));
+//printf("vector_size(project[%d]): %d", (int)i, (int)vector_size(projects[i]));
+//printf("vector_size(project[%d][%d]): %d", i, j, (int)vector_size(projects[i][j]));
+// }
+
+//vector_push_back(project, names);
+//vector_push_back(projects, project);
+
+
