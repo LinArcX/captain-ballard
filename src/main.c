@@ -2,8 +2,7 @@
 #include "cb_vector.h"
 #include "git_common.h"
 #include "sqlite_util.h"
-#include "nk_launcher.h"
-#include "nk_status.h"
+#include "nk_window.h"
 
 #define bufSize 1024
 #define LOGARITHMIC_GROWTH
