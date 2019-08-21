@@ -1,8 +1,8 @@
 #include "cb_util.h"
 #include "cb_vector.h"
 #include "git_common.h"
-#include "sqlite_util.h"
 #include "nk_window.h"
+#include "sqlite_util.h"
 
 #define bufSize 1024
 #define LOGARITHMIC_GROWTH
@@ -25,46 +25,26 @@ int main() {
 
     FILE *fp;
     if ((fp = fopen(full_address, "r")) == NULL) {
-        show_launcher_window();
+        show_launcher_window(full_address);
         perror("can't open config file!");
         return (EXIT_FAILURE);
     } else {
         sqlite3 *db;
         int db_status = open_db(&db, full_address);
         if (db_status) {
-            // Create table
-            int table_creatad = 0;
-            char *create_table_projects = "CREATE TABLE projects("
-                "ID INT PRIMARY KEY     NOT NULL,"
-                "path           TEXT    NOT NULL);";
-            table_creatad = exec_sql(&db, create_table_projects);
-
-            // Insert into table
-            char *insert_sql = "INSERT INTO projects (ID,path) "
-                "VALUES (1, '/mnt/D/WorkSpace/C/NeoDM'); "
-                "INSERT INTO projects (ID,path) "
-                "VALUES (2, '/mnt/D/WorkSpace/C/learning_c'); "
-                "INSERT INTO projects (ID,path)"
-                "VALUES (3, '/mnt/D/WorkSpace/C/CaptainBallard'); "
-                "INSERT INTO projects (ID,path)"
-                "VALUES (4, '/mnt/D/WorkSpace/C/ncurses_tutorial'); ";
-            // exec_sql(&db, insert_sql);
-
             int rc;
             sqlite3_stmt *stmt;
             sqlite3_prepare_v2(db, "select distinct path from projects", -1, &stmt,
                     NULL);
-
             while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
                 char *project_name = malloc(sizeof(char) * bufSize);
                 strcpy(project_name, sqlite3_column_text(stmt, 0));
                 vector_push_back(files, project_name);
                 check_projects(project_name);
             }
-
             sqlite3_finalize(stmt);
-            show_status_window(&*all_files);
 
+            show_status_window(&*all_files);
             // daemonize();
             // while (1) {
             //    sleep(10);
@@ -74,7 +54,8 @@ int main() {
             vector_free(all_files);
             sqlite3_close(db);
             return 0;
-        } else {
+        }
+        else {
             sqlite3_close(db);
             return 1;
         }

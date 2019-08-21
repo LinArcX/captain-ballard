@@ -23,9 +23,12 @@
 #include "cb_vector.h"
 #include "git_common.h"
 #include "nk_glfw_gl2.h"
+#include "sqlite_util.h"
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
+
+char **settings = NULL;
 
 /* window flags */
 static int run_as_daemon = nk_true;
@@ -50,7 +53,7 @@ static void error_callback(int e, const char *d) {
     printf("Error %d: %s\n", e, d);
 }
 
-int show_launcher_window() {
+int show_launcher_window(char *full_address) {
     /* GLFW */
     glfwSetErrorCallback(error_callback);
     if (!glfwInit()) {
@@ -87,10 +90,9 @@ int show_launcher_window() {
             static int box_len;
             nk_flags active;
 
-            if (show_menu)
-            {
+            if (show_menu) {
                 /* menubar */
-                enum menu_states {MENU_DEFAULT, MENU_WINDOWS};
+                enum menu_states { MENU_DEFAULT, MENU_WINDOWS };
                 static nk_size mprog = 60;
                 static int mslider = 10;
                 static int mcheck = nk_true;
@@ -99,8 +101,7 @@ int show_launcher_window() {
                 /* menu #1 */
                 nk_layout_row_begin(ctx, NK_STATIC, 25, 5);
                 nk_layout_row_push(ctx, 45);
-                if (nk_menu_begin_label(ctx, "MENU", NK_TEXT_LEFT, nk_vec2(120, 200)))
-                {
+                if (nk_menu_begin_label(ctx, "MENU", NK_TEXT_LEFT, nk_vec2(120, 200))) {
                     static int check = nk_true;
                     nk_layout_row_dynamic(ctx, 25, 1);
                     if (nk_menu_item_label(ctx, "About", NK_TEXT_LEFT))
@@ -109,10 +110,9 @@ int show_launcher_window() {
                 }
                 nk_layout_row_push(ctx, 200);
                 nk_checkbox_label(ctx, "Run as daemon", &run_as_daemon);
-                if (!run_as_daemon)
-                {
+                if (!run_as_daemon) {
                     static int current_minute = 30;
-                    //printf("buffer: %s", text[0]);
+                    // printf("buffer: %s", text[0]);
                     nk_layout_row_begin(ctx, NK_STATIC, 22, 3);
                     nk_layout_row_push(ctx, 100);
                     nk_label(ctx, "Period Time:", NK_TEXT_LEFT);
@@ -122,30 +122,32 @@ int show_launcher_window() {
                 nk_menubar_end(ctx);
             }
 
-            if (show_app_about)
-            {
+            if (show_app_about) {
                 /* about popup */
-                static struct nk_rect s = { WINDOW_WIDTH / 2 - 160, WINDOW_HEIGHT / 2 - 150 , 300, 200};
-                if (nk_popup_begin(ctx, NK_POPUP_STATIC, "About", NK_WINDOW_CLOSABLE, s))
-                {
+                static struct nk_rect s = {WINDOW_WIDTH / 2 - 160,
+                    WINDOW_HEIGHT / 2 - 150, 300, 200};
+                if (nk_popup_begin(ctx, NK_POPUP_STATIC, "About", NK_WINDOW_CLOSABLE,
+                            s)) {
                     nk_layout_row_dynamic(ctx, 20, 1);
                     nk_label(ctx, "Captain Ballard", NK_TEXT_LEFT);
                     nk_label(ctx, "By LinArcX", NK_TEXT_LEFT);
-                    nk_label(ctx, "nuklear is licensed under GPL3 License.",  NK_TEXT_LEFT);
+                    nk_label(ctx, "nuklear is licensed under GPL3 License.",
+                            NK_TEXT_LEFT);
                     nk_popup_end(ctx);
-                } else show_app_about = nk_false;
+                } else
+                    show_app_about = nk_false;
             }
 
             nk_label(ctx, "List of projects:", NK_TEXT_LEFT);
             nk_layout_row_static(ctx, 180, WINDOW_WIDTH - 50, 1);
-            nk_edit_string(ctx, NK_EDIT_BOX, box_buffer, &box_len, 512, nk_filter_default);
+            nk_edit_string(ctx, NK_EDIT_BOX, box_buffer, &box_len, 512,
+                    nk_filter_default);
 
             nk_layout_row_dynamic(ctx, 30, 3);
             nk_label(ctx, "Project Path:", NK_TEXT_LEFT);
-            active = nk_edit_string(ctx, NK_EDIT_FIELD|NK_EDIT_SIG_ENTER, text[7], &text_len[7], 64,  nk_filter_ascii);
-            if (nk_button_label(ctx, "Add") ||
-                    (active & NK_EDIT_COMMITED))
-            {
+            active = nk_edit_string(ctx, NK_EDIT_FIELD | NK_EDIT_SIG_ENTER, text[7],
+                    &text_len[7], 64, nk_filter_ascii);
+            if (nk_button_label(ctx, "Add") || (active & NK_EDIT_COMMITED)) {
                 text[7][text_len[7]] = '\n';
                 text_len[7]++;
                 memcpy(&box_buffer[box_len], &text[7], (nk_size)text_len[7]);
@@ -153,10 +155,9 @@ int show_launcher_window() {
                 text_len[7] = 0;
             }
 
-            if ((nk_size)box_buffer[0]>0)
-            {
+            if ((nk_size)box_buffer[0] > 0) {
                 inactive = 0;
-            }else{
+            } else {
                 inactive = 1;
             }
 
@@ -165,21 +166,42 @@ int show_launcher_window() {
             if (inactive) {
                 struct nk_style_button button;
                 button = ctx->style.button;
-                ctx->style.button.normal = nk_style_item_color(nk_rgb(40,40,40));
-                ctx->style.button.hover = nk_style_item_color(nk_rgb(40,40,40));
-                ctx->style.button.active = nk_style_item_color(nk_rgb(40,40,40));
-                ctx->style.button.border_color = nk_rgb(60,60,60);
-                ctx->style.button.text_background = nk_rgb(60,60,60);
-                ctx->style.button.text_normal = nk_rgb(60,60,60);
-                ctx->style.button.text_hover = nk_rgb(60,60,60);
-                ctx->style.button.text_active = nk_rgb(60,60,60);
+                ctx->style.button.normal = nk_style_item_color(nk_rgb(40, 40, 40));
+                ctx->style.button.hover = nk_style_item_color(nk_rgb(40, 40, 40));
+                ctx->style.button.active = nk_style_item_color(nk_rgb(40, 40, 40));
+                ctx->style.button.border_color = nk_rgb(60, 60, 60);
+                ctx->style.button.text_background = nk_rgb(60, 60, 60);
+                ctx->style.button.text_normal = nk_rgb(60, 60, 60);
+                ctx->style.button.text_hover = nk_rgb(60, 60, 60);
+                ctx->style.button.text_active = nk_rgb(60, 60, 60);
                 nk_button_label(ctx, "Save");
                 ctx->style.button = button;
-            } else if (nk_button_label(ctx, "Save"))
-                fprintf(stdout, "Settings saved\n");
+            } else if (nk_button_label(ctx, "Save")) {
+                if (run_as_daemon) {
+                    // vector_push_back(settings, "sd");
+                    // vector_push_back(settings, "ad");
 
+                    create_settings_table(full_address);
+                    add_project_path(full_address, box_buffer);
+
+                    // printf("\nbox_buffer: %s", box_buffer);
+                    // printf("\nbox_buffer[0]: %d", box_buffer[0]);
+                    // printf("\n(nk_size)box_buffer: %lu", (nk_size)box_buffer);
+                    // printf("\n(nk_size)box_buffer[0]: %lu", (nk_size)box_buffer[0]);
+
+                    // for(int i=0; i< (nk_size)box_buffer[0]; i++){
+                    //    printf("box_buffer[0][i]; %s", box_buffer[i]);
+                    //}
+                    fprintf(stdout, "Settings saved\n");
+                }
+            }
         }
         nk_end(ctx);
+
+        if (settings) {
+            for (size_t i = 0; i < vector_size(settings); i++)
+                printf("\nTitle: %s", settings[i]);
+        }
 
         /* Draw */
         glfwGetWindowSize(win, &width, &height);
@@ -189,9 +211,10 @@ int show_launcher_window() {
         nk_glfw3_render(NK_ANTI_ALIASING_ON);
         glfwSwapBuffers(win);
     }
+
     nk_glfw3_shutdown();
     glfwTerminate();
-
+    vector_free(settings);
     return 0;
 }
 
@@ -275,16 +298,11 @@ int show_status_window(char ***all_files) {
     return 0;
 }
 
+// nk_edit_string(ctx, NK_EDIT_FIELD, text[0], &text_len[0], 80,
+// nk_filter_default); nk_edit_string(ctx, NK_EDIT_FIELD|NK_EDIT_SIG_ENTER,
+// text[0], &text_len[0], 80,  nk_filter_default);
 
-//printf("\nbox_buffer: %s", box_buffer);
-//printf("\nbox_buffer[0]: %d", box_buffer[0]);
-//printf("\n(nk_size)box_buffer: %lu", (nk_size)box_buffer);
-//printf("\n(nk_size)box_buffer[0]: %lu", (nk_size)box_buffer[0]);
-
-//nk_edit_string(ctx, NK_EDIT_FIELD, text[0], &text_len[0], 80, nk_filter_default);
-//nk_edit_string(ctx, NK_EDIT_FIELD|NK_EDIT_SIG_ENTER, text[0], &text_len[0], 80,  nk_filter_default);
-
-//if(nk_strlen(text[0])>0){
+// if(nk_strlen(text[0])>0){
 //    inactive = 0;
 //}else{
 //    inactive = 1;
