@@ -8,8 +8,13 @@
 #define LOGARITHMIC_GROWTH
 #define LOG_FILE "/home/linarcx/captain_ballard.log"
 
-char **files = NULL;
-char ***all_files = NULL;
+char **project_names = NULL;
+
+char **staged_files = NULL;
+char ***staged = NULL;
+
+char **unstaged_files = NULL;
+char ***unstaged = NULL;
 
 int check_projects();
 
@@ -54,20 +59,44 @@ int main() {
     while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
       char *project_name = malloc(sizeof(char) * bufSize);
       strcpy(project_name, sqlite3_column_text(stmt, 0));
-      vector_push_back(files, project_name);
+      vector_push_back(project_names, project_name);
       check_projects(project_name);
     }
 
     sqlite3_finalize(stmt);
-    show_nuklear_window(&*all_files);
+    show_nuklear_window(&*project_names, &*staged, &*unstaged);
 
     // daemonize();
     // while (1) {
     //    sleep(10);
     //}
 
-    vector_free(files);
-    vector_free(all_files);
+    //        if (unstaged) {
+    //            for (size_t i = 0; i < vector_size(unstaged); i++) {
+    //                for (size_t j = 0; j < vector_size(unstaged[i]); j++) {
+    //                    printf("unstaged[%lu][%lu] = %s\n", i, j,
+    //                    unstaged[i][j]);
+    //                }
+    //            }
+    //        }
+    //
+    //        if (staged) {
+    //            for (size_t i = 0; i < vector_size(staged); i++) {
+    //                for (size_t j = 0; j < vector_size(staged[i]); j++) {
+    //                    printf("staged[%lu][%lu] = %s\n", i, j, staged[i][j]);
+    //                }
+    //            }
+    //        }
+    //
+    //        if (project_names) {
+    //            for (size_t i = 0; i < vector_size(project_names); i++) {
+    //                printf("project[%lu] = %s\n", i, project_names[i]);
+    //            }
+    //        }
+
+    vector_free(unstaged);
+    vector_free(staged);
+    vector_free(project_names);
     sqlite3_close(db);
     return 0;
   } else {
@@ -114,16 +143,18 @@ int check_projects(char *address) {
     }
     if (s->status == GIT_STATUS_INDEX_NEW) {
       c = s->head_to_index->new_file.path;
-      vector_push_back(files, (char *)c);
+      vector_push_back(staged_files, (char *)c);
     }
     if (s->status == GIT_STATUS_WT_NEW) {
       c = s->index_to_workdir->new_file.path;
-      vector_push_back(files, (char *)c);
+      vector_push_back(unstaged_files, (char *)c);
     }
   }
 
-  vector_push_back(all_files, files);
-  files = NULL;
+  vector_push_back(unstaged, unstaged_files);
+  vector_push_back(staged, staged_files);
+  unstaged_files = NULL;
+  staged_files = NULL;
 
 SHUTDOWN:
   git_repository_free(rep);
@@ -179,26 +210,3 @@ SHUTDOWN:
 
 // vector_push_back(project, names);
 // vector_push_back(projects, project);
-
-//        if (unstaged) {
-//            for (size_t i = 0; i < vector_size(unstaged); i++) {
-//                for (size_t j = 0; j < vector_size(unstaged[i]); j++) {
-//                    printf("unstaged[%lu][%lu] = %s\n", i, j,
-//                    unstaged[i][j]);
-//                }
-//            }
-//        }
-//
-//        if (staged) {
-//            for (size_t i = 0; i < vector_size(staged); i++) {
-//                for (size_t j = 0; j < vector_size(staged[i]); j++) {
-//                    printf("staged[%lu][%lu] = %s\n", i, j, staged[i][j]);
-//                }
-//            }
-//        }
-//
-//        if (project_names) {
-//            for (size_t i = 0; i < vector_size(project_names); i++) {
-//                printf("project[%lu] = %s\n", i, project_names[i]);
-//            }
-//        }
