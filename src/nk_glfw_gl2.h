@@ -1,15 +1,3 @@
-/*
- * Nuklear - v1.32.0 - public domain
- * no warrenty implied; use at your own risk.
- * authored from 2015-2017 by Micha Mettke
- */
-/*
- * ==============================================================
- *
- *                              API
- *
- * ===============================================================
- */
 #ifndef NK_GLFW_GL2_H_
 #define NK_GLFW_GL2_H_
 
@@ -32,13 +20,6 @@ NK_API void                 nk_gflw3_scroll_callback(GLFWwindow *win, double xof
 
 #endif
 
-/*
- * ==============================================================
- *
- *                          IMPLEMENTATION
- *
- * ===============================================================
- */
 #ifdef NK_GLFW_GL2_IMPLEMENTATION
 
 #ifndef NK_GLFW_TEXT_MAX
@@ -79,7 +60,7 @@ static struct nk_glfw {
     struct nk_vec2 double_click_pos;
 } glfw;
 
-NK_INTERN void
+    NK_INTERN void
 nk_glfw3_device_upload_atlas(const void *image, int width, int height)
 {
     struct nk_glfw_device *dev = &glfw.ogl;
@@ -88,10 +69,10 @@ nk_glfw3_device_upload_atlas(const void *image, int width, int height)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0,
-                GL_RGBA, GL_UNSIGNED_BYTE, image);
+            GL_RGBA, GL_UNSIGNED_BYTE, image);
 }
 
-NK_API void
+    NK_API void
 nk_glfw3_render(enum nk_anti_aliasing AA)
 {
     /* setup global state */
@@ -155,9 +136,9 @@ nk_glfw3_render(enum nk_anti_aliasing AA)
 
         /* setup vertex buffer pointer */
         {const void *vertices = nk_buffer_memory_const(&vbuf);
-        glVertexPointer(2, GL_FLOAT, vs, (const void*)((const nk_byte*)vertices + vp));
-        glTexCoordPointer(2, GL_FLOAT, vs, (const void*)((const nk_byte*)vertices + vt));
-        glColorPointer(4, GL_UNSIGNED_BYTE, vs, (const void*)((const nk_byte*)vertices + vc));}
+            glVertexPointer(2, GL_FLOAT, vs, (const void*)((const nk_byte*)vertices + vp));
+            glTexCoordPointer(2, GL_FLOAT, vs, (const void*)((const nk_byte*)vertices + vt));
+            glColorPointer(4, GL_UNSIGNED_BYTE, vs, (const void*)((const nk_byte*)vertices + vc));}
 
         /* iterate over and execute each draw command */
         offset = (const nk_draw_index*)nk_buffer_memory_const(&ebuf);
@@ -166,10 +147,10 @@ nk_glfw3_render(enum nk_anti_aliasing AA)
             if (!cmd->elem_count) continue;
             glBindTexture(GL_TEXTURE_2D, (GLuint)cmd->texture.id);
             glScissor(
-                (GLint)(cmd->clip_rect.x * glfw.fb_scale.x),
-                (GLint)((glfw.height - (GLint)(cmd->clip_rect.y + cmd->clip_rect.h)) * glfw.fb_scale.y),
-                (GLint)(cmd->clip_rect.w * glfw.fb_scale.x),
-                (GLint)(cmd->clip_rect.h * glfw.fb_scale.y));
+                    (GLint)(cmd->clip_rect.x * glfw.fb_scale.x),
+                    (GLint)((glfw.height - (GLint)(cmd->clip_rect.y + cmd->clip_rect.h)) * glfw.fb_scale.y),
+                    (GLint)(cmd->clip_rect.w * glfw.fb_scale.x),
+                    (GLint)(cmd->clip_rect.h * glfw.fb_scale.y));
             glDrawElements(GL_TRIANGLES, (GLsizei)cmd->elem_count, GL_UNSIGNED_SHORT, offset);
             offset += cmd->elem_count;
         }
@@ -197,7 +178,7 @@ nk_glfw3_render(enum nk_anti_aliasing AA)
     glPopAttrib();
 }
 
-NK_API void
+    NK_API void
 nk_glfw3_char_callback(GLFWwindow *win, unsigned int codepoint)
 {
     (void)win;
@@ -205,7 +186,7 @@ nk_glfw3_char_callback(GLFWwindow *win, unsigned int codepoint)
         glfw.text[glfw.text_len++] = codepoint;
 }
 
-NK_API void
+    NK_API void
 nk_gflw3_scroll_callback(GLFWwindow *win, double xoff, double yoff)
 {
     (void)win; (void)xoff;
@@ -213,7 +194,7 @@ nk_gflw3_scroll_callback(GLFWwindow *win, double xoff, double yoff)
     glfw.scroll.y += (float)yoff;
 }
 
-NK_API void
+    NK_API void
 nk_glfw3_mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     double x, y;
@@ -229,7 +210,7 @@ nk_glfw3_mouse_button_callback(GLFWwindow* window, int button, int action, int m
     } else glfw.is_double_click_down = nk_false;
 }
 
-NK_INTERN void
+    NK_INTERN void
 nk_glfw3_clipboard_paste(nk_handle usr, struct nk_text_edit *edit)
 {
     const char *text = glfwGetClipboardString(glfw.win);
@@ -237,7 +218,7 @@ nk_glfw3_clipboard_paste(nk_handle usr, struct nk_text_edit *edit)
     (void)usr;
 }
 
-NK_INTERN void
+    NK_INTERN void
 nk_glfw3_clipboard_copy(nk_handle usr, const char *text, int len)
 {
     char *str = 0;
@@ -251,7 +232,7 @@ nk_glfw3_clipboard_copy(nk_handle usr, const char *text, int len)
     free(str);
 }
 
-NK_API struct nk_context*
+    NK_API struct nk_context*
 nk_glfw3_init(GLFWwindow *win, enum nk_glfw_init_state init_state)
 {
     glfw.win = win;
@@ -272,7 +253,7 @@ nk_glfw3_init(GLFWwindow *win, enum nk_glfw_init_state init_state)
     return &glfw.ctx;
 }
 
-NK_API void
+    NK_API void
 nk_glfw3_font_stash_begin(struct nk_font_atlas **atlas)
 {
     nk_font_atlas_init_default(&glfw.atlas);
@@ -280,7 +261,7 @@ nk_glfw3_font_stash_begin(struct nk_font_atlas **atlas)
     *atlas = &glfw.atlas;
 }
 
-NK_API void
+    NK_API void
 nk_glfw3_font_stash_end(void)
 {
     const void *image; int w, h;
@@ -291,7 +272,7 @@ nk_glfw3_font_stash_end(void)
         nk_style_set_font(&glfw.ctx, &glfw.atlas.default_font->handle);
 }
 
-NK_API void
+    NK_API void
 nk_glfw3_new_frame(void)
 {
     int i;
@@ -327,10 +308,10 @@ nk_glfw3_new_frame(void)
     nk_input_key(ctx, NK_KEY_SCROLL_DOWN, glfwGetKey(win, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS);
     nk_input_key(ctx, NK_KEY_SCROLL_UP, glfwGetKey(win, GLFW_KEY_PAGE_UP) == GLFW_PRESS);
     nk_input_key(ctx, NK_KEY_SHIFT, glfwGetKey(win, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS||
-                                    glfwGetKey(win, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
+            glfwGetKey(win, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
 
     if (glfwGetKey(win, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS ||
-        glfwGetKey(win, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS) {
+            glfwGetKey(win, GLFW_KEY_RIGHT_CONTROL) == GLFW_PRESS) {
         nk_input_key(ctx, NK_KEY_COPY, glfwGetKey(win, GLFW_KEY_C) == GLFW_PRESS);
         nk_input_key(ctx, NK_KEY_PASTE, glfwGetKey(win, GLFW_KEY_V) == GLFW_PRESS);
         nk_input_key(ctx, NK_KEY_CUT, glfwGetKey(win, GLFW_KEY_X) == GLFW_PRESS);
@@ -367,7 +348,7 @@ nk_glfw3_new_frame(void)
     glfw.scroll = nk_vec2(0,0);
 }
 
-NK_API
+    NK_API
 void nk_glfw3_shutdown(void)
 {
     struct nk_glfw_device *dev = &glfw.ogl;
