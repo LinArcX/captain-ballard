@@ -20,10 +20,12 @@
 #define NK_GLFW_GL2_IMPLEMENTATION
 #define NK_KEYSTATE_BASED_INPUT
 #include "../libs/nuklear/nuklear.h"
+#include "nfd.h"
 #include "cb_vector.h"
 #include "git_common.h"
 #include "nk_glfw_gl2.h"
 #include "sqlite_util.h"
+
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
@@ -148,11 +150,35 @@ int show_launcher_window(char *full_address) {
             active = nk_edit_string(ctx, NK_EDIT_FIELD | NK_EDIT_SIG_ENTER, text[7],
                     &text_len[7], 64, nk_filter_ascii);
             if (nk_button_label(ctx, "Add") || (active & NK_EDIT_COMMITED)) {
-                text[7][text_len[7]] = '\n';
-                text_len[7]++;
-                memcpy(&box_buffer[box_len], &text[7], (nk_size)text_len[7]);
-                box_len += text_len[7];
-                text_len[7] = 0;
+
+                nfdchar_t *outPath = NULL;
+                nfdresult_t result = NFD_PickFolder( NULL, &outPath );
+                if ( result == NFD_OKAY )
+                {
+                    //puts("Success!");
+
+                    text[7][text_len[7]] = '\n';
+                    text_len[7]++;
+                    memcpy(&box_buffer[box_len], &outPath, (nk_size)text_len[7]);
+                    box_len += text_len[7];
+                    text_len[7] = 0;
+
+
+                    puts(outPath);
+                    free(outPath);
+                }
+                else if ( result == NFD_CANCEL )
+                {
+                    puts("User pressed cancel.");
+                }
+                else
+                {
+                    printf("Error: %s\n", NFD_GetError() );
+                }
+
+
+
+
             }
 
             if ((nk_size)box_buffer[0] > 0) {

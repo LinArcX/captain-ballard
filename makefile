@@ -1,7 +1,7 @@
 TARGET = captain_ballard
-LIBS = `pkg-config --cflags --libs libgit2 glfw3 gl glu sqlite3`
 CC = gcc
-CFLAGS = -g -Wall
+LIBS = `pkg-config --libs libgit2 gtk+-3.0 glfw3 gl glu sqlite3`
+CFLAGS = -g -Wall `pkg-config --cflags gtk+-3.0`
 ODIR = ./build
 SDIR = ./src
 
