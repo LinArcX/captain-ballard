@@ -86,7 +86,7 @@ int show_launcher_window(char *full_address) {
             static const float ratio[] = {120, 150};
             static char field_buffer[64];
             static char text[9][64];
-            static int text_len[9];
+            //static int text_len[9];
             static char box_buffer[512];
             static int field_len;
             static int box_len;
@@ -140,31 +140,49 @@ int show_launcher_window(char *full_address) {
                     show_app_about = nk_false;
             }
 
-            nk_label(ctx, "List of projects:", NK_TEXT_LEFT);
-            nk_layout_row_static(ctx, 180, WINDOW_WIDTH - 50, 1);
-            nk_edit_string(ctx, NK_EDIT_BOX, box_buffer, &box_len, 512,
-                    nk_filter_default);
+            //nk_layout_row_dynamic(ctx, 30, 3);
+            //nk_label(ctx, "List of projects:", NK_TEXT_LEFT);
+            //nk_labelf(ctx, NK_TEXT_LEFT, "%s: scrollable region", "test");
 
+            nk_layout_row_dynamic(ctx, 300, 1);
+            if (nk_group_begin(ctx, "Group_Without_Border", 0)) {
+                int i = 0;
+                char buffer[64];
+                nk_layout_row_static(ctx, 18, 150, 1);
+WIDGETS_AREA:
+                for (i = 0; i < 64; ++i) {
+                    sprintf(buffer, "0x%02x", i);
+                    nk_labelf(ctx, NK_TEXT_LEFT, "%s: scrollable region", buffer);
+                }
+                nk_group_end(ctx);
+            }
+
+            //nk_layout_row_static(ctx, 180, WINDOW_WIDTH - 50, 1);
+            //nk_edit_string(ctx, NK_EDIT_BOX, box_buffer, &box_len, 512, nk_filter_default);
             nk_layout_row_dynamic(ctx, 30, 3);
-            nk_label(ctx, "Project Path:", NK_TEXT_LEFT);
-            active = nk_edit_string(ctx, NK_EDIT_FIELD | NK_EDIT_SIG_ENTER, text[7],
-                    &text_len[7], 64, nk_filter_ascii);
-            if (nk_button_label(ctx, "Add") || (active & NK_EDIT_COMMITED)) {
+            //nk_label(ctx, "Project Path:", NK_TEXT_LEFT);
+            //active = nk_edit_string(ctx, NK_EDIT_FIELD | NK_EDIT_SIG_ENTER, text[7], &text_len[7], 64, nk_filter_ascii);
+            if (nk_button_label(ctx, "Add new project")) {
 
                 nfdchar_t *outPath = NULL;
                 nfdresult_t result = NFD_PickFolder( NULL, &outPath );
                 if ( result == NFD_OKAY )
                 {
-                    //puts("Success!");
-
-                    text[7][text_len[7]] = '\n';
-                    text_len[7]++;
-                    memcpy(&box_buffer[box_len], &outPath, (nk_size)text_len[7]);
-                    box_len += text_len[7];
-                    text_len[7] = 0;
-
-
+                    puts("Success!");
                     puts(outPath);
+                    char buffer[64];
+                    nk_layout_row_static(ctx, 18, 150, 1);
+
+                    sprintf(buffer, "0x%02x", 0);
+                    nk_labelf(ctx, NK_TEXT_LEFT, "%s: scrollable region", buffer);
+
+                    //text[7][text_len[7]] = '\n';
+                    //text_len[7]++;
+                    //memcpy(&box_buffer[box_len], &outPath, 10);
+                    //box_len += 50;
+                    //text_len[7] = 0;
+
+
                     free(outPath);
                 }
                 else if ( result == NFD_CANCEL )
@@ -175,10 +193,6 @@ int show_launcher_window(char *full_address) {
                 {
                     printf("Error: %s\n", NFD_GetError() );
                 }
-
-
-
-
             }
 
             if ((nk_size)box_buffer[0] > 0) {
