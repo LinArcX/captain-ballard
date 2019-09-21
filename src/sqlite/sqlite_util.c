@@ -1,8 +1,7 @@
-#include "cb_vector.h"
 #include <sqlite3.h>
 #include <stdio.h>
 #include <string.h>
-#include "cb_vector.h"
+#include "../util/cb_vector.h"
 
 char** names = NULL;
 

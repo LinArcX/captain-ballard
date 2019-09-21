@@ -1,8 +1,10 @@
-#include "cb_util.h"
-#include "cb_vector.h"
-#include "git_common.h"
-#include "nk_window.h"
-#include "sqlite_util.h"
+#include "util/cb_util.h"
+#include "util/cb_vector.h"
+
+#include "sqlite/sqlite_util.h"
+#include "libgit/git_common.h"
+
+#include "ui/cb_window.h"
 
 #define bufSize 1024
 #define LOGARITHMIC_GROWTH
@@ -13,7 +15,7 @@ char ***all_files = NULL;
 
 int check_projects();
 
-int main() {
+int main (int argc, char **argv){
     char full_address[100] = "";
     char *home_name = "/home/";
     char *user_name = get_current_user_name();
@@ -44,7 +46,8 @@ int main() {
             }
             sqlite3_finalize(stmt);
 
-            show_status_window(&*all_files);
+            //show_status_window(&*all_files);
+
             // daemonize();
             // while (1) {
             //    sleep(10);

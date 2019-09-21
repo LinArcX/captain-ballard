@@ -1,2 +1,6 @@
+/.clangd/*
 /build/*
+/debug/*
+/release/*
 gede2.ini
+compile_commands.json
