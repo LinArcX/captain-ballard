@@ -1,8 +1,11 @@
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "../util/cb_util.h"
 #include "../util/cb_vector.h"
 
-#include "../libs/sqlite/sqlite_util.h"
 #include "../libs/libgit/git_common.h"
+#include "../libs/sqlite/sqlite_util.h"
 
 #include "../ui/cb_window.h"
 
@@ -10,44 +13,53 @@
 #define LOGARITHMIC_GROWTH
 #define LOG_FILE "/home/linarcx/captain_ballard.log"
 
-char **files = NULL;
-char ***all_files = NULL;
+char** files = NULL;
+char*** all_files = NULL;
 
 int check_projects();
 
-int main (int argc, char **argv){
+int main(int argc, char** argv)
+{
     char full_address[100] = "";
-    char *home_name = "/home/";
-    char *user_name = get_current_user_name();
-    char *primitive_path = "/.config/CaptainBallard/config.db";
+    char address[100] = "";
+    char* home_name = "/home/";
+    char* user_name = get_current_user_name();
+    char* primitive_path = "/.config/CaptainBallard/config.db";
+    char* primitive_directory = "/.config/CaptainBallard";
 
     strcat(full_address, home_name);
     strcat(full_address, user_name);
     strcat(full_address, primitive_path);
 
-    FILE *fp;
-    if ((fp = fopen(full_address, "ab+")) == NULL) {
-        //perror("can't open config file!\n");
-        //printf("main full_address: %s\n", full_address);
+    strcat(address, home_name);
+    strcat(address, user_name);
+    strcat(address, primitive_directory);
+
+    FILE* fp;
+    if ((fp = fopen(full_address, "r")) == NULL) {
+        struct stat st = { 0 };
+        if (stat(address, &st) == -1) {
+            mkdir(address, 0700);
+        }
         show_launcher_window(full_address);
         return (EXIT_FAILURE);
     } else {
-        sqlite3 *db;
+        sqlite3* db;
         int db_status = open_db(&db, full_address);
         if (db_status) {
             int rc;
-            sqlite3_stmt *stmt;
-            sqlite3_prepare_v2(db, "select distinct path from projects", -1, &stmt,
-                    NULL);
+            sqlite3_stmt* stmt;
+            sqlite3_prepare_v2(
+                db, "select distinct path from projects", -1, &stmt, NULL);
             while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-                char *project_name = malloc(sizeof(char) * bufSize);
+                char* project_name = malloc(sizeof(char) * bufSize);
                 strcpy(project_name, sqlite3_column_text(stmt, 0));
                 vector_push_back(files, project_name);
                 check_projects(project_name);
             }
             sqlite3_finalize(stmt);
 
-            //show_status_window(&*all_files);
+            show_status_window(&*all_files);
 
             // daemonize();
             // while (1) {
@@ -58,42 +70,41 @@ int main (int argc, char **argv){
             vector_free(all_files);
             sqlite3_close(db);
             return 0;
-        }
-        else {
+        } else {
             sqlite3_close(db);
             return 1;
         }
     }
 }
 
-int check_projects(char *address) {
+int check_projects(char* address)
+{
     int error = 0;
     git_libgit2_init();
-    git_repository *rep;
-    git_status_list *statuses;
+    git_repository* rep;
+    git_status_list* statuses;
 
     error = git_repository_open(&rep, address);
     if (error < 0) {
-        const git_error *e = giterr_last();
+        const git_error* e = giterr_last();
         printf("Error: %d : %s", e->klass, e->message);
         goto SHUTDOWN;
     }
 
-    git_status_list *status;
+    git_status_list* status;
     if (git_repository_is_bare(rep)) {
         fatal("Cannot report status on bare repository", git_repository_path(rep));
     }
 
-    struct opts o = {GIT_STATUS_OPTIONS_INIT, "."};
+    struct opts o = { GIT_STATUS_OPTIONS_INIT, "." };
     o.statusopt.show = GIT_STATUS_SHOW_INDEX_AND_WORKDIR;
-    o.statusopt.flags = GIT_STATUS_OPT_INCLUDE_UNTRACKED |
-        GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX |
-        GIT_STATUS_OPT_SORT_CASE_SENSITIVELY;
+    o.statusopt.flags = GIT_STATUS_OPT_INCLUDE_UNTRACKED | GIT_STATUS_OPT_RENAMES_HEAD_TO_INDEX | GIT_STATUS_OPT_SORT_CASE_SENSITIVELY;
     check_lg2(git_status_list_new(&status, rep, &o.statusopt),
-            "Could not get status", NULL);
+        "Could not get status",
+        NULL);
 
-    const char *c;
-    const git_status_entry *s;
+    const char* c;
+    const git_status_entry* s;
     size_t i, maxi = git_status_list_entrycount(status);
 
     for (i = 0; i < maxi; ++i) {
@@ -104,11 +115,11 @@ int check_projects(char *address) {
         }
         if (s->status == GIT_STATUS_INDEX_NEW) {
             c = s->head_to_index->new_file.path;
-            vector_push_back(files, (char *)c);
+            vector_push_back(files, (char*)c);
         }
         if (s->status == GIT_STATUS_WT_NEW) {
             c = s->index_to_workdir->new_file.path;
-            vector_push_back(files, (char *)c);
+            vector_push_back(files, (char*)c);
         }
     }
 
@@ -192,3 +203,6 @@ SHUTDOWN:
 //                printf("project[%lu] = %s\n", i, project_names[i]);
 //            }
 //        }
+
+// perror("can't open config file!\n");
+// printf("main full_address: %s\n", full_address);
