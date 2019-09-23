@@ -26,6 +26,41 @@ GtkTreeIter iter_status;
 GtkTreeModel* model_status;
 GtkListStore* store_status;
 
+gboolean foreach_func_remove_all(GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, GList** rowref_list)
+{
+    //guint year_of_birth;
+    g_assert(rowref_list != NULL);
+    GtkTreeRowReference* rowref;
+    rowref = gtk_tree_row_reference_new(model, path);
+    *rowref_list = g_list_append(*rowref_list, rowref);
+
+    // gtk_tree_model_get(model, iter, COL_PATH_STATUS, &year_of_birth, -1);
+    // if (year_of_birth > 10) {
+    // }
+    return FALSE; /* do not stop walking the store, call us with next row */
+}
+
+void remove_all_status_data(void)
+{
+    GList* rr_list = NULL;
+    /* list of GtkTreeRowReferences to remove */
+    GList* node;
+    gtk_tree_model_foreach(GTK_TREE_MODEL(store_status), (GtkTreeModelForeachFunc)foreach_func_remove_all, &rr_list);
+    for (node = rr_list; node != NULL; node = node->next) {
+        GtkTreePath* path;
+        path = gtk_tree_row_reference_get_path((GtkTreeRowReference*)node->data);
+        if (path) {
+            GtkTreeIter iter;
+            if (gtk_tree_model_get_iter(GTK_TREE_MODEL(store_status), &iter, path)) {
+                gtk_list_store_remove(store_status, &iter);
+            }
+            /* FIXME/CHECK: Do we need to free the path here? */
+        }
+    }
+    g_list_foreach(rr_list, (GFunc)gtk_tree_row_reference_free, NULL);
+    g_list_free(rr_list);
+}
+
 gboolean list_store_remove_nth_row(GtkListStore* store, gint n)
 {
     GtkTreeIter iter;
@@ -227,6 +262,7 @@ static void activate(GtkApplication* app, gpointer user_data)
 
 void combo_selected(GtkWidget* widget, gpointer user_data)
 {
+    remove_all_status_data();
     gchar*** all_files = user_data;
     gchar* text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(widget));
 
