@@ -8,12 +8,23 @@ enum {
     NUM_COLS
 };
 
+enum {
+    COL_PATH_STATUS = 0,
+    NUM_COLS_STATUS
+};
+
 static int i = 0;
-GtkListStore* store;
-GtkTreeIter iter;
-GtkWidget* view;
-GtkTreeModel* model;
 gchar* full_address;
+
+GtkWidget* view;
+GtkTreeIter iter;
+GtkTreeModel* model;
+GtkListStore* store;
+
+GtkWidget* view_status;
+GtkTreeIter iter_status;
+GtkTreeModel* model_status;
+GtkListStore* store_status;
 
 gboolean list_store_remove_nth_row(GtkListStore* store, gint n)
 {
@@ -211,37 +222,95 @@ static void activate(GtkApplication* app, gpointer user_data)
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
     g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
-
     gtk_widget_show_all(window);
 }
 
-void combo_selected(GtkWidget* widget, gpointer window)
+void combo_selected(GtkWidget* widget, gpointer user_data)
 {
+    gchar*** all_files = user_data;
     gchar* text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(widget));
-    gtk_label_set_text(GTK_LABEL(window), text);
+
+    //if (all_files) {
+    //    for (size_t i = 0; i < vector_size(all_files); i++) {
+    //        gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), all_files[i][0]);
+    //    }
+    //}
+
+    gtk_list_store_append(store_status, &iter_status);
+    gtk_list_store_set(store_status, &iter_status, COL_PATH_STATUS, text, -1);
+
+    //gtk_label_set_text(GTK_LABEL(window), text);
     g_free(text);
+}
+
+void add_files(GtkWidget* widget, gpointer data)
+{
+}
+
+void commit_files(GtkWidget* widget, gpointer data)
+{
+}
+
+void push_files(GtkWidget* widget, gpointer data)
+{
+}
+
+static GtkTreeModel* create_fill_model_status(void)
+{
+    store_status = gtk_list_store_new(NUM_COLS_STATUS, G_TYPE_STRING, G_TYPE_UINT);
+    return GTK_TREE_MODEL(store_status);
+}
+
+static GtkWidget* create_view_model_status(void)
+{
+    GtkCellRenderer* renderer;
+    view_status = gtk_tree_view_new();
+
+    /* --- Column #1 --- */
+    renderer = gtk_cell_renderer_text_new();
+    gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view_status), -1, "PATH",
+        renderer, "text", COL_PATH_STATUS, NULL);
+
+    model_status = create_fill_model_status();
+    gtk_tree_view_set_model(GTK_TREE_VIEW(view_status), model_status);
+
+    /* The tree view has acquired its own reference to the
+     model, so we can drop ours. That way the model will
+     be freed automatically when the tree view is destroyed */
+    g_object_unref(model_status);
+    return view_status;
 }
 
 static void show_status_activate(GtkApplication* app, gpointer user_data)
 {
     gchar*** all_files = user_data;
 
-    GtkWidget* window;
-    GtkWidget* hbox;
-    GtkWidget* vbox;
+    GtkWidget *window, *view, *scrolled_win, *hbox, *vbox;
     GtkWidget* combo;
-    GtkWidget* label;
+    GtkWidget *btn_close, *btn_add, *btn_commit, *btn_push;
 
     /* create a new window, and set its title */
     window = gtk_application_window_new(app);
-    gtk_window_set_title(GTK_WINDOW(window), "Captaine Ballard");
+    gtk_window_set_title(GTK_WINDOW(window), "Captain Ballard");
     gtk_container_set_border_width(GTK_CONTAINER(window), 10);
     gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
     gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 
-    hbox = gtk_hbox_new(FALSE, 0);
-    vbox = gtk_vbox_new(FALSE, 15);
+    // buttons and their handlers
     combo = gtk_combo_box_text_new();
+    g_signal_connect(G_OBJECT(combo), "changed", G_CALLBACK(combo_selected), all_files);
+
+    btn_close = gtk_button_new_with_label("Close");
+    g_signal_connect_swapped(btn_close, "clicked", G_CALLBACK(gtk_widget_destroy), window);
+
+    btn_add = gtk_button_new_with_label("Add");
+    g_signal_connect(btn_add, "clicked", G_CALLBACK(add_files), NULL);
+
+    btn_commit = gtk_button_new_with_label("Commit");
+    g_signal_connect_swapped(btn_commit, "clicked", G_CALLBACK(commit_files), NULL);
+
+    btn_push = gtk_button_new_with_label("Push");
+    g_signal_connect(btn_push, "clicked", G_CALLBACK(push_files), full_address);
 
     if (all_files) {
         for (size_t i = 0; i < vector_size(all_files); i++) {
@@ -249,20 +318,26 @@ static void show_status_activate(GtkApplication* app, gpointer user_data)
         }
     }
 
-    gtk_box_pack_start(GTK_BOX(vbox), combo, FALSE, FALSE, 0);
+    // scrolled view
+    view = create_view_model_status();
+    scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
+        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_container_add(GTK_CONTAINER(scrolled_win), view);
 
-    label = gtk_label_new("...");
-    gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
+    hbox = gtk_hbox_new(FALSE, 5);
+    gtk_box_pack_start(GTK_BOX(hbox), combo, TRUE, TRUE, 1);
+    gtk_box_pack_start(GTK_BOX(hbox), btn_close, TRUE, TRUE, 1);
+    gtk_box_pack_start(GTK_BOX(hbox), btn_add, TRUE, TRUE, 1);
+    gtk_box_pack_start(GTK_BOX(hbox), btn_commit, TRUE, TRUE, 1);
+    gtk_box_pack_start(GTK_BOX(hbox), btn_push, TRUE, TRUE, 1);
 
-    gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
-    gtk_container_add(GTK_CONTAINER(window), hbox);
+    vbox = gtk_vbox_new(FALSE, 5);
+    gtk_box_pack_start(GTK_BOX(vbox), scrolled_win, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
+    gtk_container_add(GTK_CONTAINER(window), vbox);
 
-    g_signal_connect(G_OBJECT(window), "destroy",
-        G_CALLBACK(gtk_main_quit), NULL);
-
-    g_signal_connect(G_OBJECT(combo), "changed",
-        G_CALLBACK(combo_selected), (gpointer)label);
-
+    g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
     gtk_widget_show_all(window);
 }
@@ -276,7 +351,6 @@ int show_launcher_window(char* full_address)
     g_signal_connect(app, "activate", G_CALLBACK(activate), full_address);
     status = g_application_run(G_APPLICATION(app), 0, 0);
     g_object_unref(app);
-
     return status;
 }
 
@@ -302,3 +376,16 @@ int show_status_window(char*** all_files)
 //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "Mint");
 //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "Gentoo");
 //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "Debian");
+
+//////////////////////////////////////////////////////
+
+//hbox = gtk_hbox_new(FALSE, 0);
+//vbox = gtk_vbox_new(FALSE, 15);
+
+//gtk_box_pack_start(GTK_BOX(vbox), combo, FALSE, FALSE, 0);
+
+//label = gtk_label_new("...");
+//gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, FALSE, 0);
+
+//gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
+//gtk_container_add(GTK_CONTAINER(window), hbox);
