@@ -230,15 +230,23 @@ void combo_selected(GtkWidget* widget, gpointer user_data)
     gchar*** all_files = user_data;
     gchar* text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(widget));
 
-    //if (all_files) {
-    //    for (size_t i = 0; i < vector_size(all_files); i++) {
-    //        gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), all_files[i][0]);
-    //    }
-    //}
+    if (all_files) {
+        for (size_t i = 0; i < vector_size(all_files); i++) {
+            if (!strcmp(all_files[i][0], text)) {
+                for (size_t j = 0; j < vector_size(all_files[i]); j++) {
+                    printf("unstaged[%lu][%lu] = %s\n", i, j, all_files[i][j]);
+                    gtk_list_store_append(store_status, &iter_status);
+                    gtk_list_store_set(store_status, &iter_status, COL_PATH_STATUS, all_files[i][j], -1);
+                }
+            }
+        }
+    }
 
-    gtk_list_store_append(store_status, &iter_status);
-    gtk_list_store_set(store_status, &iter_status, COL_PATH_STATUS, text, -1);
+    if (gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(store_status), &iter_status, NULL, 0)) {
+        gtk_list_store_remove(store_status, &iter_status);
+    }
 
+    //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), all_files[i][j]);
     //gtk_label_set_text(GTK_LABEL(window), text);
     g_free(text);
 }
@@ -366,10 +374,6 @@ int show_status_window(char*** all_files)
 
     return status;
 }
-
-//for (size_t j = 0; j < vector_size(all_files[i]); j++) {
-//printf("unstaged[%lu][%lu] = %s\n", i, j, all_files[i][j]);
-//}
 
 //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "Arch");
 //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "Fedora");
