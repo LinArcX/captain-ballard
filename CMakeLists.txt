@@ -21,8 +21,8 @@ LINK_DIRECTORIES(${CaptainBallard_LIBRARY_DIRS})
 ADD_DEFINITIONS(${CaptainBallard_CFLAGS_OTHER})
 
 include_directories(src)
-file(GLOB SOURCES src/*.c src/**/*.c)
-file(GLOB HEADERS src/**/*.h src/**/*.hpp)
+file(GLOB SOURCES core/*.c libs/**/*.c ui/*.c util/*.c)
+file(GLOB HEADERS core/*.h libs/**/*.h ui/*.h util/*.h)
 
 ADD_EXECUTABLE(CaptainBallard ${SOURCES} ${HEADERS})
 

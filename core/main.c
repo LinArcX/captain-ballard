@@ -1,10 +1,10 @@
-#include "util/cb_util.h"
-#include "util/cb_vector.h"
+#include "../util/cb_util.h"
+#include "../util/cb_vector.h"
 
-#include "sqlite/sqlite_util.h"
-#include "libgit/git_common.h"
+#include "../libs/sqlite/sqlite_util.h"
+#include "../libs/libgit/git_common.h"
 
-#include "ui/cb_window.h"
+#include "../ui/cb_window.h"
 
 #define bufSize 1024
 #define LOGARITHMIC_GROWTH
@@ -26,9 +26,10 @@ int main (int argc, char **argv){
     strcat(full_address, primitive_path);
 
     FILE *fp;
-    if ((fp = fopen(full_address, "r")) == NULL) {
+    if ((fp = fopen(full_address, "ab+")) == NULL) {
+        //perror("can't open config file!\n");
+        //printf("main full_address: %s\n", full_address);
         show_launcher_window(full_address);
-        perror("can't open config file!");
         return (EXIT_FAILURE);
     } else {
         sqlite3 *db;
