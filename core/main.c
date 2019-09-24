@@ -1,16 +1,12 @@
-#include <sys/stat.h>
-#include <sys/types.h>
+#include "../libs/libgit/git_common.h"
+#include "../libs/sqlite/sqlite_util.h"
 
 #include "../util/cb_util.h"
 #include "../util/cb_vector.h"
 
-#include "../libs/libgit/git_common.h"
-#include "../libs/sqlite/sqlite_util.h"
-
 #include "../ui/cb_window.h"
 
 #define bufSize 1024
-#define LOGARITHMIC_GROWTH
 #define LOG_FILE "/home/linarcx/captain_ballard.log"
 
 char** files = NULL;
@@ -46,30 +42,40 @@ int main(int argc, char** argv)
     } else {
         sqlite3* db;
         int db_status = open_db(&db, full_address);
+
         if (db_status) {
-            int rc;
-            sqlite3_stmt* stmt;
-            sqlite3_prepare_v2(
-                db, "select distinct path from projects", -1, &stmt, NULL);
-            while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-                char* project_name = malloc(sizeof(char) * bufSize);
-                strcpy(project_name, sqlite3_column_text(stmt, 0));
-                vector_push_back(files, project_name);
-                check_projects(project_name);
+            while (1) {
+                sleep(5);
+
+                // Empty files and all_files
+                if (files) {
+                    for (size_t i = 0; i < vector_size(files); i++) {
+                        vector_pop_back(files);
+                    }
+                }
+
+                if (all_files) {
+                    for (size_t i = 0; i < vector_size(all_files); i++) {
+                        vector_pop_back(all_files);
+                        for (size_t j = 0; j < vector_size(all_files[i]); j++) {
+                            vector_pop_back(all_files[i]);
+                        }
+                    }
+                    vector_pop_back(all_files);
+                }
+
+                sqlite3_stmt* stmt;
+                sqlite3_prepare_v2(db, "select distinct path from projects", -1, &stmt, NULL);
+
+                while ((sqlite3_step(stmt)) == SQLITE_ROW) {
+                    char* project_name = malloc(sizeof(char) * bufSize);
+                    strcpy(project_name, sqlite3_column_text(stmt, 0));
+                    vector_push_back(files, project_name);
+                    check_projects(project_name);
+                }
+                sqlite3_finalize(stmt);
+                show_status_window(&*all_files);
             }
-            sqlite3_finalize(stmt);
-
-            show_status_window(&*all_files);
-
-            // daemonize();
-            // while (1) {
-            //    sleep(10);
-            //}
-
-            vector_free(files);
-            vector_free(all_files);
-            sqlite3_close(db);
-            return 0;
         } else {
             sqlite3_close(db);
             return 1;
@@ -206,3 +212,50 @@ SHUTDOWN:
 
 // perror("can't open config file!\n");
 // printf("main full_address: %s\n", full_address);
+
+//                FILE* fpp;
+//                fpp = fopen("/home/linarcx/cap.txt", "a+");
+//daemon(1, 0);
+//fprintf(fpp, "s");
+
+//#define LOGARITHMIC_GROWTH
+
+//if (all_files) {
+//    log_message(LOG_FILE, "all_files not empty!\n");
+//}
+
+//daemonize();
+//log_message(LOG_FILE, "!\n");
+//if_label:
+//    if (sqlite3_step(stmt) == SQLITE_ROW) {
+//        log_message(LOG_FILE, "projects table has row!\n");
+//        goto if_label;
+//    }
+
+//free(stmt);
+
+//int condition = 1;
+//int counter = 0;
+//while (condition > 0) {
+//    log_message(LOG_FILE, "while..");
+//    counter++;
+//    if (counter = 4) {
+//        condition = 0;
+//    }
+//}
+//log_message(LOG_FILE, "\n");
+
+//for (int i = 0; i < 5; i++) {
+//    log_message(LOG_FILE, "i..");
+//}
+//log_message(LOG_FILE, "\n");
+
+//if (files) {
+//    vector_free(files);
+//}
+//if (all_files) {
+//    //vector_free(all_files);
+//}
+
+//sqlite3_close(db);
+//return 0;

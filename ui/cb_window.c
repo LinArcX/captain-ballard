@@ -1,5 +1,7 @@
 #include "../libs/sqlite/sqlite_util.h"
 #include "../util/cb_vector.h"
+#include <dirent.h>
+#include <errno.h>
 #include <gtk/gtk.h>
 
 enum {
@@ -25,6 +27,14 @@ GtkWidget* view_status;
 GtkTreeIter iter_status;
 GtkTreeModel* model_status;
 GtkListStore* store_status;
+
+void close_window(GtkWidget* widget, gpointer data)
+{
+    //gchar*** all_files = data;
+
+    gtk_window_close(widget);
+    //vector_free(all_files);
+}
 
 gboolean foreach_func_remove_all(GtkTreeModel* model, GtkTreePath* path, GtkTreeIter* iter, GList** rowref_list)
 {
@@ -174,11 +184,29 @@ void add_new_path(GtkWidget* widget, gpointer data)
         GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
     if (gtk_dialog_run(GTK_DIALOG(wdg)) == GTK_RESPONSE_OK) {
         gchar* path = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(wdg));
-        printf("%s", path);
-        /* Append a row and fill in some data */
-        gtk_list_store_append(store, &iter);
-        gtk_list_store_set(store, &iter, COL_ID, i++, COL_PATH, path, -1);
-        g_print("Item added!\n");
+
+        char git_address[200] = "";
+        char* git_dir = "/.git/";
+
+        strcat(git_address, path);
+        strcat(git_address, git_dir);
+
+        DIR* dir = opendir(git_address);
+        if (dir) {
+            /* Directory exists. */
+            printf("%s", path);
+            /* Append a row and fill in some data */
+            gtk_list_store_append(store, &iter);
+            gtk_list_store_set(store, &iter, COL_ID, i++, COL_PATH, path, -1);
+            g_print("Item added!\n");
+            closedir(dir);
+        } else if (ENOENT == errno) {
+            /* Directory does not exist. */
+            g_print("Directory %s don't have a .git dir inside itself!\n");
+        } else {
+            /* opendir() failed for some other reason. */
+            g_print("opendir() failed!\n");
+        }
     }
     g_object_unref(wdg);
 }
@@ -224,32 +252,29 @@ static void activate(GtkApplication* app, gpointer user_data)
     gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 
     // buttons and their handlers
-    btn_close = gtk_button_new_with_label("Close");
-    g_signal_connect_swapped(btn_close, "clicked", G_CALLBACK(gtk_widget_destroy),
-        window);
-
-    btn_remove = gtk_button_new_with_label("Remove");
-    g_signal_connect_swapped(btn_remove, "clicked", G_CALLBACK(remove_path),
-        NULL);
-
     btn_add = gtk_button_new_with_label("Add");
     g_signal_connect(btn_add, "clicked", G_CALLBACK(add_new_path), NULL);
+
+    btn_remove = gtk_button_new_with_label("Remove");
+    g_signal_connect_swapped(btn_remove, "clicked", G_CALLBACK(remove_path), NULL);
 
     btn_save = gtk_button_new_with_label("Save");
     g_signal_connect(btn_save, "clicked", G_CALLBACK(save_path), full_address);
 
+    btn_close = gtk_button_new_with_label("Close");
+    g_signal_connect_swapped(btn_close, "clicked", G_CALLBACK(close_window), window); //gtk_widget_destroy
+
     // scrolled view
     view = create_view_and_model();
     scrolled_win = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
-        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_add(GTK_CONTAINER(scrolled_win), view);
 
     hbox = gtk_hbox_new(FALSE, 5);
-    gtk_box_pack_start(GTK_BOX(hbox), btn_close, TRUE, TRUE, 1);
-    gtk_box_pack_start(GTK_BOX(hbox), btn_remove, TRUE, TRUE, 1);
     gtk_box_pack_start(GTK_BOX(hbox), btn_add, TRUE, TRUE, 1);
+    gtk_box_pack_start(GTK_BOX(hbox), btn_remove, TRUE, TRUE, 1);
     gtk_box_pack_start(GTK_BOX(hbox), btn_save, TRUE, TRUE, 1);
+    gtk_box_pack_start(GTK_BOX(hbox), btn_close, TRUE, TRUE, 1);
 
     vbox = gtk_vbox_new(FALSE, 5);
     gtk_box_pack_start(GTK_BOX(vbox), scrolled_win, TRUE, TRUE, 0);
@@ -259,6 +284,19 @@ static void activate(GtkApplication* app, gpointer user_data)
     g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
     gtk_widget_show_all(window);
 }
+
+int show_launcher_window(char* full_address)
+{
+    GtkApplication* app;
+    int status;
+
+    app = gtk_application_new("com.github.linarcx", G_APPLICATION_FLAGS_NONE);
+    g_signal_connect(app, "activate", G_CALLBACK(activate), full_address);
+    status = g_application_run(G_APPLICATION(app), 0, 0);
+    g_object_unref(app);
+    return status;
+}
+///////////////////////////////
 
 void combo_selected(GtkWidget* widget, gpointer user_data)
 {
@@ -344,9 +382,6 @@ static void show_status_activate(GtkApplication* app, gpointer user_data)
     combo = gtk_combo_box_text_new();
     g_signal_connect(G_OBJECT(combo), "changed", G_CALLBACK(combo_selected), all_files);
 
-    btn_close = gtk_button_new_with_label("Close");
-    g_signal_connect_swapped(btn_close, "clicked", G_CALLBACK(gtk_widget_destroy), window);
-
     btn_add = gtk_button_new_with_label("Add");
     g_signal_connect(btn_add, "clicked", G_CALLBACK(add_files), NULL);
 
@@ -356,9 +391,14 @@ static void show_status_activate(GtkApplication* app, gpointer user_data)
     btn_push = gtk_button_new_with_label("Push");
     g_signal_connect(btn_push, "clicked", G_CALLBACK(push_files), full_address);
 
+    btn_close = gtk_button_new_with_label("Close");
+    g_signal_connect_swapped(btn_close, "clicked", G_CALLBACK(close_window), window); //gtk_widget_destroy
+
+    //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "sa");
     if (all_files) {
         for (size_t i = 0; i < vector_size(all_files); i++) {
             gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), all_files[i][0]);
+            printf("item: %s", all_files[i][0]);
         }
     }
 
@@ -371,31 +411,20 @@ static void show_status_activate(GtkApplication* app, gpointer user_data)
 
     hbox = gtk_hbox_new(FALSE, 5);
     gtk_box_pack_start(GTK_BOX(hbox), combo, TRUE, TRUE, 1);
-    gtk_box_pack_start(GTK_BOX(hbox), btn_close, TRUE, TRUE, 1);
     gtk_box_pack_start(GTK_BOX(hbox), btn_add, TRUE, TRUE, 1);
     gtk_box_pack_start(GTK_BOX(hbox), btn_commit, TRUE, TRUE, 1);
     gtk_box_pack_start(GTK_BOX(hbox), btn_push, TRUE, TRUE, 1);
+    gtk_box_pack_start(GTK_BOX(hbox), btn_close, TRUE, TRUE, 1);
 
     vbox = gtk_vbox_new(FALSE, 5);
     gtk_box_pack_start(GTK_BOX(vbox), scrolled_win, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
+    gtk_combo_box_set_active(combo, 0);
     g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
     gtk_widget_show_all(window);
-}
-
-int show_launcher_window(char* full_address)
-{
-    GtkApplication* app;
-    int status;
-
-    app = gtk_application_new("com.github.linarcx", G_APPLICATION_FLAGS_NONE);
-    g_signal_connect(app, "activate", G_CALLBACK(activate), full_address);
-    status = g_application_run(G_APPLICATION(app), 0, 0);
-    g_object_unref(app);
-    return status;
 }
 
 int show_status_window(char*** all_files)
