@@ -30,9 +30,8 @@ GtkListStore* store_status;
 
 void close_window(GtkWidget* widget, gpointer data)
 {
-    //gchar*** all_files = data;
-
     gtk_window_close(widget);
+    //gchar*** all_files = data;
     //vector_free(all_files);
 }
 
@@ -230,19 +229,22 @@ void remove_path(GtkWidget* widget, gpointer data)
 
 void save_path(GtkWidget* widget, gpointer data)
 {
-    full_address = data;
+    char* full_address = data;
     g_print("data is: %s\n", full_address);
     create_settings_table(full_address);
     wipe_out_table(full_address);
     gtk_tree_model_foreach(GTK_TREE_MODEL(store), foreach_func, NULL);
 }
 
-static void activate(GtkApplication* app, gpointer user_data)
+//static void activate(GtkApplication* app, gpointer user_data)
+void show_launcher_window(char* user_data)
 {
+    GtkApplication* app;
     gchar* full_address = user_data;
 
     GtkWidget *window, *view, *scrolled_win, *hbox, *vbox;
     GtkWidget *btn_close, *btn_add, *btn_remove, *btn_save;
+    app = gtk_application_new("org.gtk.example", G_APPLICATION_FLAGS_NONE);
 
     /* create a new window, and set its title */
     window = gtk_application_window_new(app);
@@ -281,22 +283,10 @@ static void activate(GtkApplication* app, gpointer user_data)
     gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
-    g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
+    //g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
     gtk_widget_show_all(window);
-}
-
-int show_launcher_window(char* full_address)
-{
-    GtkApplication* app;
-    int status;
-
-    app = gtk_application_new("com.github.linarcx", G_APPLICATION_FLAGS_NONE);
-    g_signal_connect(app, "activate", G_CALLBACK(activate), full_address);
-    status = g_application_run(G_APPLICATION(app), 0, 0);
     g_object_unref(app);
-    return status;
 }
-///////////////////////////////
 
 void combo_selected(GtkWidget* widget, gpointer user_data)
 {
@@ -363,13 +353,16 @@ static GtkWidget* create_view_model_status(void)
     return view_status;
 }
 
-static void show_status_activate(GtkApplication* app, gpointer user_data)
+void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user_data)
 {
+    GtkApplication* app;
     gchar*** all_files = user_data;
 
     GtkWidget *window, *view, *scrolled_win, *hbox, *vbox;
     GtkWidget* combo;
     GtkWidget *btn_close, *btn_add, *btn_commit, *btn_push;
+
+    app = gtk_application_new("org.gtk.example", G_APPLICATION_FLAGS_NONE);
 
     /* create a new window, and set its title */
     window = gtk_application_window_new(app);
@@ -405,8 +398,7 @@ static void show_status_activate(GtkApplication* app, gpointer user_data)
     // scrolled view
     view = create_view_model_status();
     scrolled_win = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win),
-        GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_add(GTK_CONTAINER(scrolled_win), view);
 
     hbox = gtk_hbox_new(FALSE, 5);
@@ -422,23 +414,24 @@ static void show_status_activate(GtkApplication* app, gpointer user_data)
     gtk_container_add(GTK_CONTAINER(window), vbox);
 
     gtk_combo_box_set_active(combo, 0);
-    g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
     gtk_widget_show_all(window);
-}
-
-int show_status_window(char*** all_files)
-{
-    GtkApplication* app;
-    int status;
-
-    app = gtk_application_new("com.github.linarcx", G_APPLICATION_FLAGS_NONE);
-    g_signal_connect(app, "activate", G_CALLBACK(show_status_activate), all_files);
-    status = g_application_run(G_APPLICATION(app), 0, 0);
     g_object_unref(app);
-
-    return status;
+    //g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+    //g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
 }
+
+//int show_status_window(char*** all_files)
+//{
+//    GtkApplication* app;
+//    int status;
+//
+//    app = gtk_application_new("com.github.linarcx", G_APPLICATION_FLAGS_NONE);
+//    g_signal_connect(app, "activate", G_CALLBACK(show_status_activate), all_files);
+//    status = g_application_run(G_APPLICATION(app), 0, 0);
+//    g_object_unref(app);
+//
+//    return status;
+//}
 
 //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "Arch");
 //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "Fedora");
@@ -458,3 +451,63 @@ int show_status_window(char*** all_files)
 
 //gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
 //gtk_container_add(GTK_CONTAINER(window), hbox);
+
+////////////////////////////////////////////////
+//void show_simple_window()
+//{
+//    GtkApplication* app;
+//    GtkWidget* window;
+//
+//    GtkWidget* grid;
+//    GtkWidget* button;
+//    app = gtk_application_new("org.gtk.example", G_APPLICATION_FLAGS_NONE);
+//
+//    /* create a new window, and set its title */
+//    window = gtk_application_window_new(app);
+//    gtk_window_set_title(GTK_WINDOW(window), "Window");
+//    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+//
+//    /* Here we construct the container that is going pack our buttons */
+//    grid = gtk_grid_new();
+//
+//    /* Pack the container in the window */
+//    gtk_container_add(GTK_CONTAINER(window), grid);
+//
+//    button = gtk_button_new_with_label("Button 1");
+//    //g_signal_connect(button, "clicked", G_CALLBACK(print_hello), NULL);
+//
+//    /* Place the first button in the grid cell (0, 0), and make it fill just 1 cell horizontally and vertically (ie no spanning) */
+//    gtk_grid_attach(GTK_GRID(grid), button, 0, 0, 1, 1);
+//
+//    button = gtk_button_new_with_label("Button 2");
+//    //g_signal_connect(button, "clicked", G_CALLBACK(print_hello), NULL);
+//
+//    /* Place the second button in the grid cell (1, 0), and make it fill just 1 cell horizontally and vertically (ie no spanning) */
+//    gtk_grid_attach(GTK_GRID(grid), button, 1, 0, 1, 1);
+//    button = gtk_button_new_with_label("Quit");
+//    g_signal_connect_swapped(button, "clicked", G_CALLBACK(close_window), window); //gtk_widget_destroy
+//
+//    /* Place the Quit button in the grid cell (0, 1), and make it span 2 columns. */
+//    gtk_grid_attach(GTK_GRID(grid), button, 0, 1, 2, 1);
+//
+//    /* Now that we are done packing our widgets, we show them all
+//     * in one go, by calling gtk_widget_show_all() on the window.
+//     * This call recursively calls gtk_widget_show() on all widgets
+//     * that are contained in the window, directly or indirectly.
+//     */
+//    gtk_widget_show_all(window);
+//    g_object_unref(app);
+//}
+
+//int show_launcher_window_old(char* full_address)
+//{
+//    GtkApplication* app;
+//    int status;
+//
+//    app = gtk_application_new("com.github.linarcx", G_APPLICATION_FLAGS_NONE);
+//    g_signal_connect(app, "activate", G_CALLBACK(activate), full_address);
+//    status = g_application_run(G_APPLICATION(app), 0, 0);
+//    g_object_unref(app);
+//    return status;
+//}
+///////////////////////////////

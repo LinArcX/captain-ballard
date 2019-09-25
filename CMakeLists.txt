@@ -11,7 +11,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(CaptainBallard)
 
 FIND_PACKAGE(PkgConfig REQUIRED)
-PKG_CHECK_MODULES(CaptainBallard REQUIRED gtk+-3.0 sqlite3 libgit2)
+PKG_CHECK_MODULES(CaptainBallard REQUIRED gtk+-3.0 sqlite3 libgit2 appindicator3-0.1)
+
 
 # Tell the compiler where to look for headers and to the linker where to look for libraries
 INCLUDE_DIRECTORIES(${CaptainBallard_INCLUDE_DIRS})
@@ -27,7 +28,7 @@ file(GLOB HEADERS core/*.h libs/**/*.h ui/*.h util/*.h)
 ADD_EXECUTABLE(CaptainBallard ${SOURCES} ${HEADERS})
 
 # Link the target against the CaptainBallard.0 libraries
-TARGET_LINK_LIBRARIES(CaptainBallard ${CaptainBallard_LIBRARIES})
+TARGET_LINK_LIBRARIES(CaptainBallard ${CaptainBallard_LIBRARIES} pthread) #
 
 set_target_properties(CaptainBallard PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_SOURCE_DIR}/debug

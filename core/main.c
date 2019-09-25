@@ -1,3 +1,7 @@
+//#include <pthread.h>
+
+#include <libappindicator3-0.1/libappindicator/app-indicator.h>
+
 #include "../libs/libgit/git_common.h"
 #include "../libs/sqlite/sqlite_util.h"
 
@@ -5,8 +9,10 @@
 #include "../util/cb_vector.h"
 
 #include "../ui/cb_window.h"
+#include "../ui/system_tray.h"
 
 #define bufSize 1024
+#define arrSize 200
 #define LOG_FILE "/home/linarcx/captain_ballard.log"
 
 char** files = NULL;
@@ -14,10 +20,69 @@ char*** all_files = NULL;
 
 int check_projects();
 
-int main(int argc, char** argv)
+//void close_window(GtkWidget* widget, gpointer data)
+//{
+//    gtk_window_close(widget);
+//}
+
+void m_item_close_selected(GtkMenuItem* menuitem, gpointer user_data)
 {
-    char full_address[100] = "";
-    char address[100] = "";
+    gtk_main_quit();
+    //gtk_widget_destroy(window);
+}
+
+void m_item_settings_selected(GtkMenuItem* menuitem, gpointer user_data)
+{
+    //show_main_window();
+    //g_print("Settings !\n");
+}
+
+void show_tray_window()
+{
+    GtkWidget* m_item_settings;
+    GtkWidget* m_item_close;
+    GtkWidget* m_item_separator;
+    AppIndicator* indicator;
+    GtkWidget* menu;
+
+    menu = gtk_menu_new();
+
+    GtkWidget* box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
+    GtkWidget* icon = gtk_image_new_from_file("../assets/gears.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
+    gtk_image_set_pixel_size(icon, 8);
+    GtkWidget* label = gtk_label_new("Settings");
+    m_item_settings = gtk_menu_item_new();
+    gtk_container_add(GTK_CONTAINER(box), icon);
+    gtk_container_add(GTK_CONTAINER(box), label);
+    gtk_container_add(GTK_CONTAINER(m_item_settings), box);
+
+    m_item_close = gtk_menu_item_new_with_label("Close");
+    m_item_separator = gtk_separator_menu_item_new();
+
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), m_item_settings);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), m_item_separator);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), m_item_close);
+
+    g_signal_connect(m_item_settings, "activate", G_CALLBACK(m_item_settings_selected), NULL);
+    g_signal_connect(m_item_close, "activate", G_CALLBACK(m_item_close_selected), NULL);
+
+    gchar* icon_name = "../assets/captain-cap.png"; //"indicator-messages"
+    indicator = app_indicator_new("example-simple-client", icon_name, APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+    app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
+    app_indicator_set_attention_icon(indicator, "indicator-messages-new");
+    app_indicator_set_menu(indicator, GTK_MENU(menu));
+
+    gtk_widget_show_all(menu);
+}
+
+int show_main_window()
+{
+    char* full_address = malloc(sizeof(char) * arrSize);
+    char* address = malloc(sizeof(char) * arrSize);
+
+    memset(full_address, 0, sizeof(char) * arrSize);
+    memset(address, 0, sizeof(char) * arrSize);
+
     char* home_name = "/home/";
     char* user_name = get_current_user_name();
     char* primitive_path = "/.config/CaptainBallard/config.db";
@@ -42,45 +107,57 @@ int main(int argc, char** argv)
     } else {
         sqlite3* db;
         int db_status = open_db(&db, full_address);
-
         if (db_status) {
-            while (1) {
-                sleep(5);
+            //while (1) {
+            //sleep(5);
 
-                // Empty files and all_files
-                if (files) {
-                    for (size_t i = 0; i < vector_size(files); i++) {
-                        vector_pop_back(files);
-                    }
+            // Empty files and all_files
+            if (files) {
+                for (size_t i = 0; i < vector_size(files); i++) {
+                    vector_pop_back(files);
                 }
-
-                if (all_files) {
-                    for (size_t i = 0; i < vector_size(all_files); i++) {
-                        vector_pop_back(all_files);
-                        for (size_t j = 0; j < vector_size(all_files[i]); j++) {
-                            vector_pop_back(all_files[i]);
-                        }
-                    }
-                    vector_pop_back(all_files);
-                }
-
-                sqlite3_stmt* stmt;
-                sqlite3_prepare_v2(db, "select distinct path from projects", -1, &stmt, NULL);
-
-                while ((sqlite3_step(stmt)) == SQLITE_ROW) {
-                    char* project_name = malloc(sizeof(char) * bufSize);
-                    strcpy(project_name, sqlite3_column_text(stmt, 0));
-                    vector_push_back(files, project_name);
-                    check_projects(project_name);
-                }
-                sqlite3_finalize(stmt);
-                show_status_window(&*all_files);
             }
+
+            if (all_files) {
+                for (size_t i = 0; i < vector_size(all_files); i++) {
+                    vector_pop_back(all_files);
+                    for (size_t j = 0; j < vector_size(all_files[i]); j++) {
+                        vector_pop_back(all_files[i]);
+                    }
+                }
+                vector_pop_back(all_files);
+            }
+
+            sqlite3_stmt* stmt;
+            sqlite3_prepare_v2(db, "select distinct path from projects", -1, &stmt, NULL);
+
+            while ((sqlite3_step(stmt)) == SQLITE_ROW) {
+                char* project_name = malloc(sizeof(char) * bufSize);
+                memset(project_name, 0, sizeof(char) * bufSize);
+
+                strcpy(project_name, sqlite3_column_text(stmt, 0));
+                vector_push_back(files, project_name);
+                check_projects(project_name);
+            }
+            sqlite3_finalize(stmt);
+            show_status_window(&*all_files);
+            //}
         } else {
             sqlite3_close(db);
             return 1;
         }
     }
+}
+
+int main(int argc, char** argv)
+{
+    gtk_init(&argc, &argv);
+
+    show_tray_window();
+    show_main_window();
+
+    gtk_main();
+    return 0;
 }
 
 int check_projects(char* address)
@@ -137,6 +214,30 @@ SHUTDOWN:
     git_libgit2_shutdown();
     return 0;
 }
+//char full_address[100] = "";
+//char address[100] = "";
+
+//printf("address is: %s\n", address);
+//printf("full_address is: %s\n", full_address);
+//log_message(LOG_FILE, full_address);
+//log_message(LOG_FILE, "\n");
+
+//pthread_t tid_tray_window;
+//pthread_t tid_status_window;
+//pthread_create(&tid_tray_window, NULL, show_main_window, NULL);
+
+//pthread_create(&tid_status_window, NULL, status_window_func, NULL);
+
+////pthread_join(tid_tray_window, NULL);
+////show_system_tray_window();
+
+//show_launcher_window("sd");
+//show_simple_window();
+//show_status_window("a");
+
+//pthread_join(tid_tray_window, NULL);
+
+//pthread_exit(NULL);
 
 // if (s->index_to_workdir) {
 //}
@@ -259,3 +360,35 @@ SHUTDOWN:
 
 //sqlite3_close(db);
 //return 0;
+
+//////////////////////////////
+//void* status_window_func(void* vargp)
+//{
+
+//int main(int argc, char** argv)
+//{
+//    //pthread_t tid_tray_window;
+//    //pthread_t tid_status_window;
+//    //pthread_create(&tid_tray_window, NULL, tray_window_func, NULL);
+//    //pthread_create(&tid_status_window, NULL, status_window_func, NULL);
+//
+//    ////pthread_exit(NULL);
+//    ////pthread_join(tid_tray_window, NULL);
+//    //pthread_join(tid_status_window, NULL);
+//    ////show_system_tray_window();
+//}
+
+//void* tray_window_func(void* vargp)
+//{
+//    show_system_tray_window();
+//    //show_launcher_window("as");
+//}
+
+//void* tray_window_func(void* vargp)
+//{
+//    printf("************************");
+//    //show_system_tray_window();
+//    //show_launcher_window("as");
+//}
+
+// create_settings_table("/home/linarcx/.config/CaptainBallard/config.db");
