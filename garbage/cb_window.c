@@ -11,11 +11,6 @@ enum {
     NUM_COLS
 };
 
-enum {
-    COL_PATH_STATUS = 0,
-    NUM_COLS_STATUS
-};
-
 static int i = 0;
 gchar* full_address;
 
@@ -288,200 +283,191 @@ void show_launcher_window(char* user_data)
     gtk_widget_show_all(window);
     g_object_unref(app);
 }
+/////////////////////////////////
 
-void combo_selected(GtkWidget* widget, gpointer user_data)
-{
-    remove_all_status_data();
-    gchar*** all_files = user_data;
-    gchar* text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(widget));
+//void combo_selected(GtkWidget* widget, gpointer user_data)
+//{
+//    remove_all_status_data();
+//    gchar*** all_files = user_data;
+//    gchar* text = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX(widget));
+//
+//    if (all_files) {
+//        for (size_t i = 0; i < vector_size(all_files); i++) {
+//            if (!strcmp(all_files[i][0], text)) {
+//                for (size_t j = 0; j < vector_size(all_files[i]); j++) {
+//                    printf("unstaged[%lu][%lu] = %s\n", i, j, all_files[i][j]);
+//                    gtk_list_store_append(store_status, &iter_status);
+//                    gtk_list_store_set(store_status, &iter_status, COL_PATH_STATUS, all_files[i][j], -1);
+//                }
+//            }
+//        }
+//    }
+//
+//    if (gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(store_status), &iter_status, NULL, 0)) {
+//        gtk_list_store_remove(store_status, &iter_status);
+//    }
+//
+//    //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), all_files[i][j]);
+//    //gtk_label_set_text(GTK_LABEL(window), text);
+//    g_free(text);
+//}
+//
+//void add_files(GtkWidget* widget, gpointer data)
+//{
+//}
+//
+//void commit_files(GtkWidget* widget, gpointer data)
+//{
+//}
+//
+//void push_files(GtkWidget* widget, gpointer data)
+//{
+//}
+//
+//static GtkTreeModel* create_fill_model_status(void)
+//{
+//    store_status = gtk_list_store_new(NUM_COLS_STATUS, G_TYPE_STRING, G_TYPE_UINT);
+//    return GTK_TREE_MODEL(store_status);
+//}
+//
+//static GtkWidget* create_view_model_status(void)
+//{
+//    GtkCellRenderer* renderer;
+//    view_status = gtk_tree_view_new();
+//
+//    /* --- Column #1 --- */
+//    renderer = gtk_cell_renderer_text_new();
+//    gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view_status), -1, "PATH",
+//        renderer, "text", COL_PATH_STATUS, NULL);
+//
+//    model_status = create_fill_model_status();
+//    gtk_tree_view_set_model(GTK_TREE_VIEW(view_status), model_status);
+//
+//    /* The tree view has acquired its own reference to the
+//     model, so we can drop ours. That way the model will
+//     be freed automatically when the tree view is destroyed */
+//    g_object_unref(model_status);
+//    return view_status;
+//}
+//GtkWidget* status_window;
+//GtkApplication* status_app;
+//
+//void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user_data)
+//{
+//    gchar*** all_files = user_data;
+//
+//    GtkWidget *view, *scrolled_win, *hbox, *vbox;
+//    GtkWidget* combo;
+//    GtkWidget *btn_close, *btn_add, *btn_commit, *btn_push;
+//
+//    status_app = gtk_application_new("captain_ballard.status_window", G_APPLICATION_FLAGS_NONE);
+//
+//    /* create a new window, and set its title */
+//    status_window = gtk_application_window_new(status_app);
+//    gtk_window_set_title(GTK_WINDOW(status_window), "Status");
+//    gtk_container_set_border_width(GTK_CONTAINER(status_window), 10);
+//    gtk_window_set_default_size(GTK_WINDOW(status_window), 800, 600);
+//    gtk_window_set_resizable(GTK_WINDOW(status_window), TRUE);
+//
+//    // buttons and their handlers
+//    combo = gtk_combo_box_text_new();
+//    g_signal_connect(G_OBJECT(combo), "changed", G_CALLBACK(combo_selected), all_files);
+//
+//    btn_add = gtk_button_new_with_label("Add");
+//    g_signal_connect(btn_add, "clicked", G_CALLBACK(add_files), NULL);
+//
+//    btn_commit = gtk_button_new_with_label("Commit");
+//    g_signal_connect_swapped(btn_commit, "clicked", G_CALLBACK(commit_files), NULL);
+//
+//    btn_push = gtk_button_new_with_label("Push");
+//    g_signal_connect(btn_push, "clicked", G_CALLBACK(push_files), full_address);
+//
+//    btn_close = gtk_button_new_with_label("Close");
+//    g_signal_connect_swapped(btn_close, "clicked", G_CALLBACK(close_window), status_window); //gtk_widget_destroy
+//
+//    //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "sa");
+//    if (all_files) {
+//        for (size_t i = 0; i < vector_size(all_files); i++) {
+//            gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), all_files[i][0]);
+//            printf("item: %s", all_files[i][0]);
+//        }
+//    }
+//
+//    // scrolled view
+//    view = create_view_model_status();
+//    scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+//    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+//    gtk_container_add(GTK_CONTAINER(scrolled_win), view);
+//
+//    hbox = gtk_hbox_new(FALSE, 5);
+//    gtk_box_pack_start(GTK_BOX(hbox), combo, TRUE, TRUE, 1);
+//    gtk_box_pack_start(GTK_BOX(hbox), btn_add, TRUE, TRUE, 1);
+//    gtk_box_pack_start(GTK_BOX(hbox), btn_commit, TRUE, TRUE, 1);
+//    gtk_box_pack_start(GTK_BOX(hbox), btn_push, TRUE, TRUE, 1);
+//    gtk_box_pack_start(GTK_BOX(hbox), btn_close, TRUE, TRUE, 1);
+//
+//    vbox = gtk_vbox_new(FALSE, 5);
+//    gtk_box_pack_start(GTK_BOX(vbox), scrolled_win, TRUE, TRUE, 0);
+//    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
+//    gtk_container_add(GTK_CONTAINER(status_window), vbox);
+//
+//    gtk_combo_box_set_active(combo, 0);
+//    gtk_widget_show_all(status_window);
+//    g_object_unref(status_app);
+//    //g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+//    //g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
+//    //    }
+//}
+//////////////////////////////////////////////////
+/////////////////////////////////////////////////
+///
 
-    if (all_files) {
-        for (size_t i = 0; i < vector_size(all_files); i++) {
-            if (!strcmp(all_files[i][0], text)) {
-                for (size_t j = 0; j < vector_size(all_files[i]); j++) {
-                    printf("unstaged[%lu][%lu] = %s\n", i, j, all_files[i][j]);
-                    gtk_list_store_append(store_status, &iter_status);
-                    gtk_list_store_set(store_status, &iter_status, COL_PATH_STATUS, all_files[i][j], -1);
-                }
-            }
-        }
-    }
-
-    if (gtk_tree_model_iter_nth_child(GTK_TREE_MODEL(store_status), &iter_status, NULL, 0)) {
-        gtk_list_store_remove(store_status, &iter_status);
-    }
-
-    //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), all_files[i][j]);
-    //gtk_label_set_text(GTK_LABEL(window), text);
-    g_free(text);
-}
-
-void add_files(GtkWidget* widget, gpointer data)
-{
-}
-
-void commit_files(GtkWidget* widget, gpointer data)
-{
-}
-
-void push_files(GtkWidget* widget, gpointer data)
-{
-}
-
-static GtkTreeModel* create_fill_model_status(void)
-{
-    store_status = gtk_list_store_new(NUM_COLS_STATUS, G_TYPE_STRING, G_TYPE_UINT);
-    return GTK_TREE_MODEL(store_status);
-}
-
-static GtkWidget* create_view_model_status(void)
-{
-    GtkCellRenderer* renderer;
-    view_status = gtk_tree_view_new();
-
-    /* --- Column #1 --- */
-    renderer = gtk_cell_renderer_text_new();
-    gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view_status), -1, "PATH",
-        renderer, "text", COL_PATH_STATUS, NULL);
-
-    model_status = create_fill_model_status();
-    gtk_tree_view_set_model(GTK_TREE_VIEW(view_status), model_status);
-
-    /* The tree view has acquired its own reference to the
-     model, so we can drop ours. That way the model will
-     be freed automatically when the tree view is destroyed */
-    g_object_unref(model_status);
-    return view_status;
-}
-GtkWidget* status_window;
-GtkApplication* status_app;
-
-static void g_list_func(GtkWidget* widget, gpointer user_data)
-{
-    //int i = gtk_application_window_get_id(widget);
-    if (GTK_IS_WINDOW(widget)) {
-        printf("FUCK\n");
-    }
-}
-
-void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user_data)
-{
-    GList* m_list = gtk_window_list_toplevels();
-    g_list_foreach(m_list, (GFunc)g_list_func, NULL);
-    printf("\n");
-
-    if (g_list_length(m_list) <= 3) {
-        gchar*** all_files = user_data;
-
-        GtkWidget *view, *scrolled_win, *hbox, *vbox;
-        GtkWidget* combo;
-        GtkWidget *btn_close, *btn_add, *btn_commit, *btn_push;
-
-        status_app = gtk_application_new("captain_ballard.status_window", G_APPLICATION_FLAGS_NONE);
-
-        /* create a new window, and set its title */
-        status_window = gtk_application_window_new(status_app);
-        gtk_window_set_title(GTK_WINDOW(status_window), "Status");
-        gtk_container_set_border_width(GTK_CONTAINER(status_window), 10);
-        gtk_window_set_default_size(GTK_WINDOW(status_window), 800, 600);
-        gtk_window_set_resizable(GTK_WINDOW(status_window), TRUE);
-
-        // buttons and their handlers
-        combo = gtk_combo_box_text_new();
-        g_signal_connect(G_OBJECT(combo), "changed", G_CALLBACK(combo_selected), all_files);
-
-        btn_add = gtk_button_new_with_label("Add");
-        g_signal_connect(btn_add, "clicked", G_CALLBACK(add_files), NULL);
-
-        btn_commit = gtk_button_new_with_label("Commit");
-        g_signal_connect_swapped(btn_commit, "clicked", G_CALLBACK(commit_files), NULL);
-
-        btn_push = gtk_button_new_with_label("Push");
-        g_signal_connect(btn_push, "clicked", G_CALLBACK(push_files), full_address);
-
-        btn_close = gtk_button_new_with_label("Close");
-        g_signal_connect_swapped(btn_close, "clicked", G_CALLBACK(close_window), status_window); //gtk_widget_destroy
-
-        //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "sa");
-        if (all_files) {
-            for (size_t i = 0; i < vector_size(all_files); i++) {
-                gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), all_files[i][0]);
-                printf("item: %s", all_files[i][0]);
-            }
-        }
-
-        // scrolled view
-        view = create_view_model_status();
-        scrolled_win = gtk_scrolled_window_new(NULL, NULL);
-        gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-        gtk_container_add(GTK_CONTAINER(scrolled_win), view);
-
-        hbox = gtk_hbox_new(FALSE, 5);
-        gtk_box_pack_start(GTK_BOX(hbox), combo, TRUE, TRUE, 1);
-        gtk_box_pack_start(GTK_BOX(hbox), btn_add, TRUE, TRUE, 1);
-        gtk_box_pack_start(GTK_BOX(hbox), btn_commit, TRUE, TRUE, 1);
-        gtk_box_pack_start(GTK_BOX(hbox), btn_push, TRUE, TRUE, 1);
-        gtk_box_pack_start(GTK_BOX(hbox), btn_close, TRUE, TRUE, 1);
-
-        vbox = gtk_vbox_new(FALSE, 5);
-        gtk_box_pack_start(GTK_BOX(vbox), scrolled_win, TRUE, TRUE, 0);
-        gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
-        gtk_container_add(GTK_CONTAINER(status_window), vbox);
-
-        gtk_combo_box_set_active(combo, 0);
-        gtk_widget_show_all(status_window);
-        g_object_unref(status_app);
-        //g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
-        //g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
-    }
-}
-
-////////////////////////////////////////////////
-void show_simple_window()
-{
-    GtkApplication* app;
-    GtkWidget* window;
-
-    GtkWidget* grid;
-    GtkWidget* button;
-    app = gtk_application_new("captaine_ballard.simple_window", G_APPLICATION_FLAGS_NONE);
-
-    /* create a new window, and set its title */
-    window = gtk_application_window_new(app);
-    gtk_window_set_title(GTK_WINDOW(window), "Window");
-    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-
-    /* Here we construct the container that is going pack our buttons */
-    grid = gtk_grid_new();
-
-    /* Pack the container in the window */
-    gtk_container_add(GTK_CONTAINER(window), grid);
-
-    button = gtk_button_new_with_label("Button 1");
-    //g_signal_connect(button, "clicked", G_CALLBACK(print_hello), NULL);
-
-    /* Place the first button in the grid cell (0, 0), and make it fill just 1 cell horizontally and vertically (ie no spanning) */
-    gtk_grid_attach(GTK_GRID(grid), button, 0, 0, 1, 1);
-
-    button = gtk_button_new_with_label("Button 2");
-    //g_signal_connect(button, "clicked", G_CALLBACK(print_hello), NULL);
-
-    /* Place the second button in the grid cell (1, 0), and make it fill just 1 cell horizontally and vertically (ie no spanning) */
-    gtk_grid_attach(GTK_GRID(grid), button, 1, 0, 1, 1);
-    button = gtk_button_new_with_label("Quit");
-    g_signal_connect_swapped(button, "clicked", G_CALLBACK(close_window), window); //gtk_widget_destroy
-
-    /* Place the Quit button in the grid cell (0, 1), and make it span 2 columns. */
-    gtk_grid_attach(GTK_GRID(grid), button, 0, 1, 2, 1);
-
-    /* Now that we are done packing our widgets, we show them all
-     * in one go, by calling gtk_widget_show_all() on the window.
-     * This call recursively calls gtk_widget_show() on all widgets
-     * that are contained in the window, directly or indirectly.
-     */
-    gtk_widget_show_all(window);
-    g_object_unref(app);
-}
+//////////////////////////////////////////////////
+//void show_simple_window()
+//{
+//    GtkApplication* app;
+//    GtkWidget* window;
+//
+//    GtkWidget* grid;
+//    GtkWidget* button;
+//    app = gtk_application_new("captaine_ballard.simple_window", G_APPLICATION_FLAGS_NONE);
+//
+//    /* create a new window, and set its title */
+//    window = gtk_application_window_new(app);
+//    gtk_window_set_title(GTK_WINDOW(window), "Window");
+//    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
+//
+//    /* Here we construct the container that is going pack our buttons */
+//    grid = gtk_grid_new();
+//
+//    /* Pack the container in the window */
+//    gtk_container_add(GTK_CONTAINER(window), grid);
+//
+//    button = gtk_button_new_with_label("Button 1");
+//    //g_signal_connect(button, "clicked", G_CALLBACK(print_hello), NULL);
+//
+//    /* Place the first button in the grid cell (0, 0), and make it fill just 1 cell horizontally and vertically (ie no spanning) */
+//    gtk_grid_attach(GTK_GRID(grid), button, 0, 0, 1, 1);
+//
+//    button = gtk_button_new_with_label("Button 2");
+//    //g_signal_connect(button, "clicked", G_CALLBACK(print_hello), NULL);
+//
+//    /* Place the second button in the grid cell (1, 0), and make it fill just 1 cell horizontally and vertically (ie no spanning) */
+//    gtk_grid_attach(GTK_GRID(grid), button, 1, 0, 1, 1);
+//    button = gtk_button_new_with_label("Quit");
+//    g_signal_connect_swapped(button, "clicked", G_CALLBACK(close_window), window); //gtk_widget_destroy
+//
+//    /* Place the Quit button in the grid cell (0, 1), and make it span 2 columns. */
+//    gtk_grid_attach(GTK_GRID(grid), button, 0, 1, 2, 1);
+//
+//    /* Now that we are done packing our widgets, we show them all
+//     * in one go, by calling gtk_widget_show_all() on the window.
+//     * This call recursively calls gtk_widget_show() on all widgets
+//     * that are contained in the window, directly or indirectly.
+//     */
+//    gtk_widget_show_all(window);
+//    g_object_unref(app);
+//}
 
 //int show_launcher_window_old(char* full_address)
 //{
@@ -538,3 +524,18 @@ void show_simple_window()
 //!gtk_window_is_active(status_window)) {
 //gtk_window_get_focus_visible
 //if (gtk_window_get_focus_visible(status_window)) {
+
+///////////////////////////
+//static void g_list_func(GtkWidget* widget, gpointer user_data)
+//{
+//    //int i = gtk_application_window_get_id(widget);
+//    if (GTK_IS_WINDOW(widget)) {
+//        printf("FUCK\n");
+//    }
+//}
+
+//    GList* m_list = gtk_window_list_toplevels();
+//    g_list_foreach(m_list, (GFunc)g_list_func, NULL);
+//    printf("\n");
+//
+//    if (g_list_length(m_list) <= 3) {
