@@ -1,5 +1,3 @@
-//#include <pthread.h>
-
 #include <libappindicator3-0.1/libappindicator/app-indicator.h>
 
 #include "../libs/libgit/git_common.h"
@@ -15,15 +13,11 @@
 #define arrSize 200
 #define LOG_FILE "/home/linarcx/captain_ballard.log"
 
+char* address;
+char* full_address;
+
 char** files = NULL;
 char*** all_files = NULL;
-
-int check_projects();
-
-//void close_window(GtkWidget* widget, gpointer data)
-//{
-//    gtk_window_close(widget);
-//}
 
 void m_item_close_selected(GtkMenuItem* menuitem, gpointer user_data)
 {
@@ -33,8 +27,7 @@ void m_item_close_selected(GtkMenuItem* menuitem, gpointer user_data)
 
 void m_item_settings_selected(GtkMenuItem* menuitem, gpointer user_data)
 {
-    //show_main_window();
-    //g_print("Settings !\n");
+    show_launcher_window(full_address);
 }
 
 void show_tray_window()
@@ -75,89 +68,44 @@ void show_tray_window()
     gtk_widget_show_all(menu);
 }
 
-int show_main_window()
+void prepare_status_window(char* full_address)
 {
-    char* full_address = malloc(sizeof(char) * arrSize);
-    char* address = malloc(sizeof(char) * arrSize);
-
-    memset(full_address, 0, sizeof(char) * arrSize);
-    memset(address, 0, sizeof(char) * arrSize);
-
-    char* home_name = "/home/";
-    char* user_name = get_current_user_name();
-    char* primitive_path = "/.config/CaptainBallard/config.db";
-    char* primitive_directory = "/.config/CaptainBallard";
-
-    strcat(full_address, home_name);
-    strcat(full_address, user_name);
-    strcat(full_address, primitive_path);
-
-    strcat(address, home_name);
-    strcat(address, user_name);
-    strcat(address, primitive_directory);
-
-    FILE* fp;
-    if ((fp = fopen(full_address, "r")) == NULL) {
-        struct stat st = { 0 };
-        if (stat(address, &st) == -1) {
-            mkdir(address, 0700);
-        }
-        show_launcher_window(full_address);
-        return (EXIT_FAILURE);
-    } else {
-        sqlite3* db;
-        int db_status = open_db(&db, full_address);
-        if (db_status) {
-            //while (1) {
-            //sleep(5);
-
-            // Empty files and all_files
-            if (files) {
-                for (size_t i = 0; i < vector_size(files); i++) {
-                    vector_pop_back(files);
-                }
+    sqlite3* db;
+    int db_status = open_db(&db, full_address);
+    if (db_status) {
+        // Empty files and all_files
+        if (files) {
+            for (size_t i = 0; i < vector_size(files); i++) {
+                vector_pop_back(files);
             }
+        }
 
-            if (all_files) {
-                for (size_t i = 0; i < vector_size(all_files); i++) {
-                    vector_pop_back(all_files);
-                    for (size_t j = 0; j < vector_size(all_files[i]); j++) {
-                        vector_pop_back(all_files[i]);
-                    }
-                }
+        if (all_files) {
+            for (size_t i = 0; i < vector_size(all_files); i++) {
                 vector_pop_back(all_files);
+                for (size_t j = 0; j < vector_size(all_files[i]); j++) {
+                    vector_pop_back(all_files[i]);
+                }
             }
-
-            sqlite3_stmt* stmt;
-            sqlite3_prepare_v2(db, "select distinct path from projects", -1, &stmt, NULL);
-
-            while ((sqlite3_step(stmt)) == SQLITE_ROW) {
-                char* project_name = malloc(sizeof(char) * bufSize);
-                memset(project_name, 0, sizeof(char) * bufSize);
-
-                strcpy(project_name, sqlite3_column_text(stmt, 0));
-                vector_push_back(files, project_name);
-                check_projects(project_name);
-            }
-            sqlite3_finalize(stmt);
-            show_status_window(&*all_files);
-            //}
-        } else {
-            sqlite3_close(db);
-            return 1;
+            //vector_pop_back(all_files);
         }
+
+        sqlite3_stmt* stmt;
+        sqlite3_prepare_v2(db, "select distinct path from projects", -1, &stmt, NULL);
+
+        while ((sqlite3_step(stmt)) == SQLITE_ROW) {
+            char* project_name = malloc(sizeof(char) * bufSize);
+            memset(project_name, 0, sizeof(char) * bufSize);
+
+            strcpy(project_name, sqlite3_column_text(stmt, 0));
+            vector_push_back(files, project_name);
+            check_projects(project_name);
+        }
+        sqlite3_finalize(stmt);
+        show_status_window(&*all_files);
+    } else {
+        sqlite3_close(db);
     }
-}
-
-int main(int argc, char** argv)
-{
-    gtk_init(&argc, &argv);
-
-    show_tray_window();
-    show_main_window();
-
-    gtk_main();
-    return 0;
 }
 
 int check_projects(char* address)
@@ -214,6 +162,143 @@ SHUTDOWN:
     git_libgit2_shutdown();
     return 0;
 }
+
+static void show_status_window_Func(gpointer user_data)
+{
+    char* full_address = user_data;
+    prepare_status_window(full_address);
+}
+
+void prepare_addresses()
+{
+    full_address = malloc(sizeof(char) * arrSize);
+    address = malloc(sizeof(char) * arrSize);
+
+    memset(full_address, 0, sizeof(char) * arrSize);
+    memset(address, 0, sizeof(char) * arrSize);
+
+    char* home_name = "/home/";
+    char* user_name = get_current_user_name();
+    char* primitive_path = "/.config/CaptainBallard/config.db";
+    char* primitive_directory = "/.config/CaptainBallard";
+
+    strcat(full_address, home_name);
+    strcat(full_address, user_name);
+    strcat(full_address, primitive_path);
+
+    strcat(address, home_name);
+    strcat(address, user_name);
+    strcat(address, primitive_directory);
+}
+
+int main(int argc, char** argv)
+{
+    // Initialize gtk
+    gtk_init(&argc, &argv);
+
+    // Show tray window
+    show_tray_window();
+
+    // create config file
+    prepare_addresses();
+
+    /* Check for configurations
+     * 1. If it can't find it, create new one and open settings window
+     * 2. If config file exists, it open status window
+     */
+    FILE* fp;
+    if ((fp = fopen(full_address, "r")) == NULL) {
+        struct stat st = { 0 };
+        if (stat(address, &st) == -1) {
+            mkdir(address, 0700);
+        }
+        show_launcher_window(full_address);
+    } else {
+        gint tag = g_timeout_add(5000, show_status_window_Func, full_address);
+    }
+
+    gtk_main();
+    return 0;
+}
+
+//void setTimeout(int milliseconds)
+//{
+//    // If milliseconds is less or equal to 0
+//    // will be simple return from function without throw error
+//    if (milliseconds <= 0) {
+//        fprintf(stderr, "Count milliseconds for timeout is less or equal to 0\n");
+//        return;
+//    }
+//
+//    // a current time of milliseconds
+//    int milliseconds_since = clock() * 1000 / CLOCKS_PER_SEC;
+//
+//    // needed count milliseconds of return from this timeout
+//    int end = milliseconds_since + milliseconds;
+//
+//    // wait while until needed time comes
+//    do {
+//        milliseconds_since = clock() * 1000 / CLOCKS_PER_SEC;
+//    } while (milliseconds_since <= end);
+//}
+//
+//void repetitive_task()
+//{
+//    int delay = 5;
+//start_point:
+//    // counter downtime for run a rocket while the delay with more 0
+//    do {
+//        // erase the previous line and display remain of the delay
+//        printf("\033[ATime left for run rocket: %d\n", delay);
+//
+//        // a timeout for display
+//        setTimeout(1000);
+//
+//        // decrease the delay to 1
+//        delay--;
+//
+//    } while (delay >= 0);
+//
+//    show_simple_window();
+//    delay = 5;
+//    goto start_point;
+//}
+
+//#define interval 8 // serve as seconds
+//volatile int breakflag = interval; // number of times the handle will run
+//
+//void handle(int sig)
+//{
+//    //printf("Hello\n");
+//    --breakflag;
+//    alarm(1); // fire alarm and it's handler again
+//}
+
+//int repetitive_task()
+//{
+//test:
+//    signal(SIGALRM, handle); // register signal handler
+//
+//    alarm(1); // fire first alarm
+//
+//    // serve as one second delay
+//    while (breakflag) {
+//        sleep(1);
+//    }
+//
+//    // reset alarm clock
+//    printf("resetting...\n");
+//    show_main_window();
+//
+//    if (!breakflag) {
+//        breakflag = interval;
+//        goto test;
+//    }
+//
+//    //printf("done\n");
+//    return 0;
+//}
+
 //char full_address[100] = "";
 //char address[100] = "";
 
@@ -392,3 +477,72 @@ SHUTDOWN:
 //}
 
 // create_settings_table("/home/linarcx/.config/CaptainBallard/config.db");
+
+//////////////////////////////////////
+//void show_main_window()
+//{
+//    char* full_address = malloc(sizeof(char) * arrSize);
+//    char* address = malloc(sizeof(char) * arrSize);
+//
+//    memset(full_address, 0, sizeof(char) * arrSize);
+//    memset(address, 0, sizeof(char) * arrSize);
+//
+//    char* home_name = "/home/";
+//    char* user_name = get_current_user_name();
+//    char* primitive_path = "/.config/CaptainBallard/config.db";
+//    char* primitive_directory = "/.config/CaptainBallard";
+//
+//    strcat(full_address, home_name);
+//    strcat(full_address, user_name);
+//    strcat(full_address, primitive_path);
+//
+//    strcat(address, home_name);
+//    strcat(address, user_name);
+//    strcat(address, primitive_directory);
+//
+//    FILE* fp;
+//    if ((fp = fopen(full_address, "r")) == NULL) {
+//        struct stat st = { 0 };
+//        if (stat(address, &st) == -1) {
+//            mkdir(address, 0700);
+//        }
+//        show_launcher_window(full_address);
+//    } else {
+//        sqlite3* db;
+//        int db_status = open_db(&db, full_address);
+//        if (db_status) {
+//            //// Empty files and all_files
+//            //if (files) {
+//            //    for (size_t i = 0; i < vector_size(files); i++) {
+//            //        vector_pop_back(files);
+//            //    }
+//            //}
+//
+//            //if (all_files) {
+//            //    for (size_t i = 0; i < vector_size(all_files); i++) {
+//            //        vector_pop_back(all_files);
+//            //        for (size_t j = 0; j < vector_size(all_files[i]); j++) {
+//            //            vector_pop_back(all_files[i]);
+//            //        }
+//            //    }
+//            //    vector_pop_back(all_files);
+//            //}
+//
+//            sqlite3_stmt* stmt;
+//            sqlite3_prepare_v2(db, "select distinct path from projects", -1, &stmt, NULL);
+//
+//            while ((sqlite3_step(stmt)) == SQLITE_ROW) {
+//                char* project_name = malloc(sizeof(char) * bufSize);
+//                memset(project_name, 0, sizeof(char) * bufSize);
+//
+//                strcpy(project_name, sqlite3_column_text(stmt, 0));
+//                vector_push_back(files, project_name);
+//                check_projects(project_name);
+//            }
+//            sqlite3_finalize(stmt);
+//            show_status_window(&*all_files);
+//        } else {
+//            sqlite3_close(db);
+//        }
+//    }
+//}

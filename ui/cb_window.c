@@ -2,6 +2,7 @@
 #include "../util/cb_vector.h"
 #include <dirent.h>
 #include <errno.h>
+#include <gdk/gdk.h>
 #include <gtk/gtk.h>
 
 enum {
@@ -244,7 +245,7 @@ void show_launcher_window(char* user_data)
 
     GtkWidget *window, *view, *scrolled_win, *hbox, *vbox;
     GtkWidget *btn_close, *btn_add, *btn_remove, *btn_save;
-    app = gtk_application_new("org.gtk.example", G_APPLICATION_FLAGS_NONE);
+    app = gtk_application_new("captaine_ballard.launcher_window", G_APPLICATION_FLAGS_NONE);
 
     /* create a new window, and set its title */
     window = gtk_application_window_new(app);
@@ -352,73 +353,148 @@ static GtkWidget* create_view_model_status(void)
     g_object_unref(model_status);
     return view_status;
 }
+GtkWidget* status_window;
+GtkApplication* status_app;
+
+static void g_list_func(GtkWidget* widget, gpointer user_data)
+{
+    //int i = gtk_application_window_get_id(widget);
+    if (GTK_IS_WINDOW(widget)) {
+        printf("FUCK\n");
+    }
+}
 
 void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user_data)
 {
+    GList* m_list = gtk_window_list_toplevels();
+    g_list_foreach(m_list, (GFunc)g_list_func, NULL);
+    printf("\n");
+
+    if (g_list_length(m_list) <= 3) {
+        gchar*** all_files = user_data;
+
+        GtkWidget *view, *scrolled_win, *hbox, *vbox;
+        GtkWidget* combo;
+        GtkWidget *btn_close, *btn_add, *btn_commit, *btn_push;
+
+        status_app = gtk_application_new("captain_ballard.status_window", G_APPLICATION_FLAGS_NONE);
+
+        /* create a new window, and set its title */
+        status_window = gtk_application_window_new(status_app);
+        gtk_window_set_title(GTK_WINDOW(status_window), "Status");
+        gtk_container_set_border_width(GTK_CONTAINER(status_window), 10);
+        gtk_window_set_default_size(GTK_WINDOW(status_window), 800, 600);
+        gtk_window_set_resizable(GTK_WINDOW(status_window), TRUE);
+
+        // buttons and their handlers
+        combo = gtk_combo_box_text_new();
+        g_signal_connect(G_OBJECT(combo), "changed", G_CALLBACK(combo_selected), all_files);
+
+        btn_add = gtk_button_new_with_label("Add");
+        g_signal_connect(btn_add, "clicked", G_CALLBACK(add_files), NULL);
+
+        btn_commit = gtk_button_new_with_label("Commit");
+        g_signal_connect_swapped(btn_commit, "clicked", G_CALLBACK(commit_files), NULL);
+
+        btn_push = gtk_button_new_with_label("Push");
+        g_signal_connect(btn_push, "clicked", G_CALLBACK(push_files), full_address);
+
+        btn_close = gtk_button_new_with_label("Close");
+        g_signal_connect_swapped(btn_close, "clicked", G_CALLBACK(close_window), status_window); //gtk_widget_destroy
+
+        //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "sa");
+        if (all_files) {
+            for (size_t i = 0; i < vector_size(all_files); i++) {
+                gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), all_files[i][0]);
+                printf("item: %s", all_files[i][0]);
+            }
+        }
+
+        // scrolled view
+        view = create_view_model_status();
+        scrolled_win = gtk_scrolled_window_new(NULL, NULL);
+        gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+        gtk_container_add(GTK_CONTAINER(scrolled_win), view);
+
+        hbox = gtk_hbox_new(FALSE, 5);
+        gtk_box_pack_start(GTK_BOX(hbox), combo, TRUE, TRUE, 1);
+        gtk_box_pack_start(GTK_BOX(hbox), btn_add, TRUE, TRUE, 1);
+        gtk_box_pack_start(GTK_BOX(hbox), btn_commit, TRUE, TRUE, 1);
+        gtk_box_pack_start(GTK_BOX(hbox), btn_push, TRUE, TRUE, 1);
+        gtk_box_pack_start(GTK_BOX(hbox), btn_close, TRUE, TRUE, 1);
+
+        vbox = gtk_vbox_new(FALSE, 5);
+        gtk_box_pack_start(GTK_BOX(vbox), scrolled_win, TRUE, TRUE, 0);
+        gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
+        gtk_container_add(GTK_CONTAINER(status_window), vbox);
+
+        gtk_combo_box_set_active(combo, 0);
+        gtk_widget_show_all(status_window);
+        g_object_unref(status_app);
+        //g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+        //g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
+    }
+}
+
+////////////////////////////////////////////////
+void show_simple_window()
+{
     GtkApplication* app;
-    gchar*** all_files = user_data;
+    GtkWidget* window;
 
-    GtkWidget *window, *view, *scrolled_win, *hbox, *vbox;
-    GtkWidget* combo;
-    GtkWidget *btn_close, *btn_add, *btn_commit, *btn_push;
-
-    app = gtk_application_new("org.gtk.example", G_APPLICATION_FLAGS_NONE);
+    GtkWidget* grid;
+    GtkWidget* button;
+    app = gtk_application_new("captaine_ballard.simple_window", G_APPLICATION_FLAGS_NONE);
 
     /* create a new window, and set its title */
     window = gtk_application_window_new(app);
-    gtk_window_set_title(GTK_WINDOW(window), "Captain Ballard");
+    gtk_window_set_title(GTK_WINDOW(window), "Window");
     gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-    gtk_window_set_default_size(GTK_WINDOW(window), 800, 600);
-    gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
 
-    // buttons and their handlers
-    combo = gtk_combo_box_text_new();
-    g_signal_connect(G_OBJECT(combo), "changed", G_CALLBACK(combo_selected), all_files);
+    /* Here we construct the container that is going pack our buttons */
+    grid = gtk_grid_new();
 
-    btn_add = gtk_button_new_with_label("Add");
-    g_signal_connect(btn_add, "clicked", G_CALLBACK(add_files), NULL);
+    /* Pack the container in the window */
+    gtk_container_add(GTK_CONTAINER(window), grid);
 
-    btn_commit = gtk_button_new_with_label("Commit");
-    g_signal_connect_swapped(btn_commit, "clicked", G_CALLBACK(commit_files), NULL);
+    button = gtk_button_new_with_label("Button 1");
+    //g_signal_connect(button, "clicked", G_CALLBACK(print_hello), NULL);
 
-    btn_push = gtk_button_new_with_label("Push");
-    g_signal_connect(btn_push, "clicked", G_CALLBACK(push_files), full_address);
+    /* Place the first button in the grid cell (0, 0), and make it fill just 1 cell horizontally and vertically (ie no spanning) */
+    gtk_grid_attach(GTK_GRID(grid), button, 0, 0, 1, 1);
 
-    btn_close = gtk_button_new_with_label("Close");
-    g_signal_connect_swapped(btn_close, "clicked", G_CALLBACK(close_window), window); //gtk_widget_destroy
+    button = gtk_button_new_with_label("Button 2");
+    //g_signal_connect(button, "clicked", G_CALLBACK(print_hello), NULL);
 
-    //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "sa");
-    if (all_files) {
-        for (size_t i = 0; i < vector_size(all_files); i++) {
-            gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), all_files[i][0]);
-            printf("item: %s", all_files[i][0]);
-        }
-    }
+    /* Place the second button in the grid cell (1, 0), and make it fill just 1 cell horizontally and vertically (ie no spanning) */
+    gtk_grid_attach(GTK_GRID(grid), button, 1, 0, 1, 1);
+    button = gtk_button_new_with_label("Quit");
+    g_signal_connect_swapped(button, "clicked", G_CALLBACK(close_window), window); //gtk_widget_destroy
 
-    // scrolled view
-    view = create_view_model_status();
-    scrolled_win = gtk_scrolled_window_new(NULL, NULL);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_win), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_container_add(GTK_CONTAINER(scrolled_win), view);
+    /* Place the Quit button in the grid cell (0, 1), and make it span 2 columns. */
+    gtk_grid_attach(GTK_GRID(grid), button, 0, 1, 2, 1);
 
-    hbox = gtk_hbox_new(FALSE, 5);
-    gtk_box_pack_start(GTK_BOX(hbox), combo, TRUE, TRUE, 1);
-    gtk_box_pack_start(GTK_BOX(hbox), btn_add, TRUE, TRUE, 1);
-    gtk_box_pack_start(GTK_BOX(hbox), btn_commit, TRUE, TRUE, 1);
-    gtk_box_pack_start(GTK_BOX(hbox), btn_push, TRUE, TRUE, 1);
-    gtk_box_pack_start(GTK_BOX(hbox), btn_close, TRUE, TRUE, 1);
-
-    vbox = gtk_vbox_new(FALSE, 5);
-    gtk_box_pack_start(GTK_BOX(vbox), scrolled_win, TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
-    gtk_container_add(GTK_CONTAINER(window), vbox);
-
-    gtk_combo_box_set_active(combo, 0);
+    /* Now that we are done packing our widgets, we show them all
+     * in one go, by calling gtk_widget_show_all() on the window.
+     * This call recursively calls gtk_widget_show() on all widgets
+     * that are contained in the window, directly or indirectly.
+     */
     gtk_widget_show_all(window);
     g_object_unref(app);
-    //g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
-    //g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
 }
+
+//int show_launcher_window_old(char* full_address)
+//{
+//    GtkApplication* app;
+//    int status;
+//
+//    app = gtk_application_new("com.github.linarcx", G_APPLICATION_FLAGS_NONE);
+//    g_signal_connect(app, "activate", G_CALLBACK(activate), full_address);
+//    status = g_application_run(G_APPLICATION(app), 0, 0);
+//    g_object_unref(app);
+//    return status;
+//}
+///////////////////////////////
 
 //int show_status_window(char*** all_files)
 //{
@@ -452,62 +528,13 @@ void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user
 //gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
 //gtk_container_add(GTK_CONTAINER(window), hbox);
 
-////////////////////////////////////////////////
-//void show_simple_window()
-//{
-//    GtkApplication* app;
-//    GtkWidget* window;
-//
-//    GtkWidget* grid;
-//    GtkWidget* button;
-//    app = gtk_application_new("org.gtk.example", G_APPLICATION_FLAGS_NONE);
-//
-//    /* create a new window, and set its title */
-//    window = gtk_application_window_new(app);
-//    gtk_window_set_title(GTK_WINDOW(window), "Window");
-//    gtk_container_set_border_width(GTK_CONTAINER(window), 10);
-//
-//    /* Here we construct the container that is going pack our buttons */
-//    grid = gtk_grid_new();
-//
-//    /* Pack the container in the window */
-//    gtk_container_add(GTK_CONTAINER(window), grid);
-//
-//    button = gtk_button_new_with_label("Button 1");
-//    //g_signal_connect(button, "clicked", G_CALLBACK(print_hello), NULL);
-//
-//    /* Place the first button in the grid cell (0, 0), and make it fill just 1 cell horizontally and vertically (ie no spanning) */
-//    gtk_grid_attach(GTK_GRID(grid), button, 0, 0, 1, 1);
-//
-//    button = gtk_button_new_with_label("Button 2");
-//    //g_signal_connect(button, "clicked", G_CALLBACK(print_hello), NULL);
-//
-//    /* Place the second button in the grid cell (1, 0), and make it fill just 1 cell horizontally and vertically (ie no spanning) */
-//    gtk_grid_attach(GTK_GRID(grid), button, 1, 0, 1, 1);
-//    button = gtk_button_new_with_label("Quit");
-//    g_signal_connect_swapped(button, "clicked", G_CALLBACK(close_window), window); //gtk_widget_destroy
-//
-//    /* Place the Quit button in the grid cell (0, 1), and make it span 2 columns. */
-//    gtk_grid_attach(GTK_GRID(grid), button, 0, 1, 2, 1);
-//
-//    /* Now that we are done packing our widgets, we show them all
-//     * in one go, by calling gtk_widget_show_all() on the window.
-//     * This call recursively calls gtk_widget_show() on all widgets
-//     * that are contained in the window, directly or indirectly.
-//     */
-//    gtk_widget_show_all(window);
-//    g_object_unref(app);
-//}
+//GList* list = gtk_application_get_windows(status_app);
+//if (m_list) {
 
-//int show_launcher_window_old(char* full_address)
-//{
-//    GtkApplication* app;
-//    int status;
-//
-//    app = gtk_application_new("com.github.linarcx", G_APPLICATION_FLAGS_NONE);
-//    g_signal_connect(app, "activate", G_CALLBACK(activate), full_address);
-//    status = g_application_run(G_APPLICATION(app), 0, 0);
-//    g_object_unref(app);
-//    return status;
-//}
-///////////////////////////////
+//GdkWindow* gwin;
+//gwin = gtk_widget_get_window(GTK_WIDGET(status_window));
+//printf("the X11 id is %u\n", GDK_DRAWABLE_XID(gwin));
+
+//!gtk_window_is_active(status_window)) {
+//gtk_window_get_focus_visible
+//if (gtk_window_get_focus_visible(status_window)) {
