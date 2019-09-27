@@ -19,19 +19,36 @@ void m_item_settings_selected(GtkMenuItem* menuitem, gpointer user_data)
 
 void m_item_about_us_selected(GtkMenuItem* menuitem, gpointer user_data)
 {
-    char* license = read_file_return_content("../LICENSE");
+    //char* m_license = read_file_return_content("../LICENSE");
+
+    const char* authors[1];
+    authors[0] = "LinArcX";
+
+    const char* artists[1];
+    artists[0] = "Morpheous";
+
+    const char* documenters[1];
+    documenters[0] = "Neo";
 
     GdkPixbuf* captain_ballard_logo = gdk_pixbuf_new_from_file("../assets/captain-cap.png", NULL);
     gtk_show_about_dialog(NULL,
-        "program-name", "CaptainBallard",
-        "logo", captain_ballard_logo,
         "title", ("About Captain Ballard"),
-        "version", "version: 0.1.0",
-        "license", license,
+        "logo", captain_ballard_logo,
         "website", "https://github.com/LinArcX/CaptainBallard",
-        "author", "LinArcX",
-        "copyright", "Copyright © 2019-2020 LinArcX",
+        "website-label", "Captain Ballard",
+        "version", "version: 0.1.0",
+        "comments", "App that protect your .git projects.",
+        "license-type", GTK_LICENSE_GPL_3_0,
+        "wrap-license", 1,
+        "authors", authors,
+        "translator-credits", "Trinity",
+        "documenters", documenters,
+        "artists", artists,
         NULL);
+
+    //"copyright", "Copyright © 2019-2020 LinArcX",
+    //"program-name", "Captain Ballard",
+    //"license", license,
 }
 
 void show_tray_window(char* full_address)
