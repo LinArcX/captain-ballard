@@ -1,10 +1,12 @@
 #include <gtk/gtk.h>
 #include <libappindicator3-0.1/libappindicator/app-indicator.h>
 
+#include "../util/cb_file.h"
 #include "window_settings.h"
 
-void m_item_close_selected(GtkMenuItem* menuitem, gpointer user_data)
+void m_item_exit_selected(GtkMenuItem* menuitem, gpointer user_data)
 {
+    // Exit from the app
     gtk_main_quit();
     //gtk_widget_destroy(window);
 }
@@ -15,34 +17,76 @@ void m_item_settings_selected(GtkMenuItem* menuitem, gpointer user_data)
     show_settings_window(full_address);
 }
 
+void m_item_about_us_selected(GtkMenuItem* menuitem, gpointer user_data)
+{
+    char* license = read_file_return_content("../LICENSE");
+
+    GdkPixbuf* captain_ballard_logo = gdk_pixbuf_new_from_file("../assets/captain-cap.png", NULL);
+    gtk_show_about_dialog(NULL,
+        "program-name", "CaptainBallard",
+        "logo", captain_ballard_logo,
+        "title", ("About Captain Ballard"),
+        "version", "version: 0.1.0",
+        "license", license,
+        "website", "https://github.com/LinArcX/CaptainBallard",
+        "author", "LinArcX",
+        "copyright", "Copyright © 2019-2020 LinArcX",
+        NULL);
+}
+
 void show_tray_window(char* full_address)
 {
-    GtkWidget* m_item_settings;
-    GtkWidget* m_item_close;
-    GtkWidget* m_item_separator;
-    AppIndicator* indicator;
     GtkWidget* menu;
+    AppIndicator* indicator;
+
+    GtkWidget* m_item_settings;
+    GtkWidget* m_item_about_us;
+    GtkWidget* m_item_exit;
+    GtkWidget* m_item_separator;
 
     menu = gtk_menu_new();
 
-    GtkWidget* box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-    GtkWidget* icon = gtk_image_new_from_file("../assets/gears.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
-    gtk_image_set_pixel_size(icon, 8);
-    GtkWidget* label = gtk_label_new("Settings");
+    // Settings
+    GtkWidget* box_settings = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    GtkWidget* icon_settings = gtk_image_new_from_file("../assets/settings.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
+    gtk_image_set_pixel_size(icon_settings, 10);
+    GtkWidget* label_settings = gtk_label_new("Settings");
     m_item_settings = gtk_menu_item_new();
-    gtk_container_add(GTK_CONTAINER(box), icon);
-    gtk_container_add(GTK_CONTAINER(box), label);
-    gtk_container_add(GTK_CONTAINER(m_item_settings), box);
+    gtk_container_add(GTK_CONTAINER(box_settings), icon_settings);
+    gtk_container_add(GTK_CONTAINER(box_settings), label_settings);
+    gtk_container_add(GTK_CONTAINER(m_item_settings), box_settings);
 
-    m_item_close = gtk_menu_item_new_with_label("Close");
+    // About Us
+    GtkWidget* box_about_us = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    GtkWidget* icon_about_us = gtk_image_new_from_file("../assets/about_us.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
+    gtk_image_set_pixel_size(icon_about_us, 10);
+    GtkWidget* label_about_us = gtk_label_new("About Us");
+    m_item_about_us = gtk_menu_item_new();
+    gtk_container_add(GTK_CONTAINER(box_about_us), icon_about_us);
+    gtk_container_add(GTK_CONTAINER(box_about_us), label_about_us);
+    gtk_container_add(GTK_CONTAINER(m_item_about_us), box_about_us);
+
+    // Exit
+    GtkWidget* box_exit = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+    GtkWidget* icon_exit = gtk_image_new_from_file("../assets/exit.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
+    gtk_image_set_pixel_size(icon_exit, 10);
+    GtkWidget* label_exit = gtk_label_new("Exit");
+    m_item_exit = gtk_menu_item_new();
+    gtk_container_add(GTK_CONTAINER(box_exit), icon_exit);
+    gtk_container_add(GTK_CONTAINER(box_exit), label_exit);
+    gtk_container_add(GTK_CONTAINER(m_item_exit), box_exit);
+
+    //m_item_close = gtk_menu_item_new_with_label("Close");
     m_item_separator = gtk_separator_menu_item_new();
 
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), m_item_settings);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), m_item_about_us);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), m_item_separator);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), m_item_close);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), m_item_exit);
 
     g_signal_connect(m_item_settings, "activate", G_CALLBACK(m_item_settings_selected), full_address);
-    g_signal_connect(m_item_close, "activate", G_CALLBACK(m_item_close_selected), NULL);
+    g_signal_connect(m_item_about_us, "activate", G_CALLBACK(m_item_about_us_selected), NULL);
+    g_signal_connect(m_item_exit, "activate", G_CALLBACK(m_item_exit_selected), NULL);
 
     gchar* icon_name = "../assets/captain-cap.png"; //"indicator-messages"
     indicator = app_indicator_new("example-simple-client", icon_name, APP_INDICATOR_CATEGORY_APPLICATION_STATUS);

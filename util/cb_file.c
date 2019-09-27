@@ -1,29 +1,50 @@
 #include "cb_array.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define bufSize 1024
 
-void write_char_to_file(char *address, char *str) {
-    FILE *fptr;
+void write_char_to_file(char* address, char* str)
+{
+    FILE* fptr;
     fptr = fopen(address, "a");
     fputs(str, fptr);
     fclose(fptr);
 }
 
-int read_file_line_by_line(char *path) {
-    FILE *fp;
+int read_file_line_by_line(char* path)
+{
+    FILE* fp;
     //char buffer[255];
     char* buffer;
-    buffer = malloc (bufSize * 50);
+    buffer = malloc(bufSize * 50);
 
     fp = fopen(path, "r");
-    while (fgets(buffer, 255, (FILE *)fp)) {
+    while (fgets(buffer, 255, (FILE*)fp)) {
         printf("%s\n", buffer);
     }
     fclose(fp);
     return 0;
+}
+
+char* read_file_return_content(char* path)
+{
+    char* buffer = 0;
+    long length;
+    FILE* f = fopen(path, "rb");
+
+    if (f) {
+        fseek(f, 0, SEEK_END);
+        length = ftell(f);
+        fseek(f, 0, SEEK_SET);
+        buffer = malloc(length);
+        if (buffer) {
+            fread(buffer, 1, length, f);
+        }
+        fclose(f);
+    }
+    return buffer;
 }
 
 //    FILE *fp;
