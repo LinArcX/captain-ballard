@@ -2,7 +2,7 @@
 Git-aware app that protect your projects before too late:)
 
 ## Preview
-!["gnulium"](shots/1.0.0/captain-ballard.png "gnulium")
+!["gnulium"](./assets/shots/1.0.0/about.png "captain-ballard")
 
 ## A long time ago..
 I had lots of projects in my computer and some of them managed by git. after a couple of months, by accident i lost my whole data and projects.
@@ -63,16 +63,13 @@ Bugs should be reported [here](https://github.com/LinArcX/captain-ballard/issues
 
 
 ## Credits
-LinArcX
-Github Repo:[https://github.com/LinArcX](https://github.com/LinArcX)
-
 E-Mail:linarcx@gmail.com
 
 ## What is Captain Ballard?
 > Captain Ballard (played by Roy Jones Jr.), was the captain of the Zion hovercraft Caduceus in the film The Matrix Reloaded.
 
 <h1 align="center">
-	<img width="200" src="assets/captain-ballard.svg" alt="captain-ballard">
+	<img width="200" src="assets/captain.svg" alt="captain-ballard">
 	<br>
 	<br>
     <p2>captain-ballard</p2>
