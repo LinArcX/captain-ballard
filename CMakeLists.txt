@@ -1,9 +1,10 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(captain-ballard)
 
+SET(CMAKE_INSTALL_PREFIX /usr)
+
 FIND_PACKAGE(PkgConfig REQUIRED)
 PKG_CHECK_MODULES(captain-ballard REQUIRED gtk+-3.0 sqlite3 libgit2 appindicator3-0.1)
-
 
 # Tell the compiler where to look for headers and to the linker where to look for libraries
 INCLUDE_DIRECTORIES(${captain-ballard_INCLUDE_DIRS})
@@ -25,6 +26,12 @@ set_target_properties(captain-ballard PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY_DEBUG   ${CMAKE_SOURCE_DIR}/debug
   RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}/release
 )
+
+install(TARGETS captain-ballard DESTINATION bin)
+install(FILES ./util/images/about_us.png DESTINATION share/applications)
+
+#INSTALL_FILES(/usr/bin captain-ballard)
+
 #SET (CMAKE_CXX_STANDARD 17)
 #SET(CMAKE_C_COMPILER /usr/bin/gcc)
 #SET(CMAKE_CXX_COMPILER /usr/bin/g++)

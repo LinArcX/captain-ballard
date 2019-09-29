@@ -11,10 +11,10 @@ And that accident was a good motivation for me to keep my projects safe.
 ## Features
 Watch __.git__ directories on your hard-drive and show a window that contain changes in your projects periodically(You can adjust the period time).
 
-### Arch
+### Void
 [WIP]
 
-### Void
+### Arch
 [WIP]
 
 ### Build From Source
@@ -65,9 +65,6 @@ Bugs should be reported [here](https://github.com/LinArcX/captain-ballard/issues
 
 ## Credits
 E-Mail:linarcx@gmail.com
-
-## What is Captain Ballard?
-> Captain Ballard (played by Roy Jones Jr.), was the captain of the Zion hovercraft Caduceus in the film The Matrix Reloaded.
 
 <h1 align="center">
 	<img width="200" src="./util/images/captain.svg" alt="captain-ballard">
