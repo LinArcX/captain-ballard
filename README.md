@@ -2,7 +2,7 @@
 Git-aware app that protect your projects before too late:)
 
 ## Preview
-!["gnulium"](./assets/shots/1.0.0/about.png "captain-ballard")
+!["gnulium"](./assets/shots/1.0.0/status.png "captain-ballard")
 
 ## A long time ago..
 I had lots of projects in my computer and some of them managed by git. after a couple of months, by accident i lost my whole data and projects.
@@ -22,11 +22,11 @@ Watch __.git__ directories on your hard-drive and show a window that contain cha
 
 |Dependencies||
 |-----|:-----:|
-|[cmake](https://www.archlinux.org/packages/extra/x86_64/git/)|![](https://github.com/LinxGem33/Neon/blob/master/artwork/done.svg.png?raw=true)
-|[gtk+-3.0](https://www.archlinux.org/packages/extra/x86_64/qt5-base/)|![](https://github.com/LinxGem33/Neon/blob/master/artwork/done.svg.png?raw=true)
-|[sqlite3](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols/)|![](https://github.com/LinxGem33/Neon/blob/master/artwork/done.svg.png?raw=true)
-|[libgit2](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols2/)|![](https://github.com/LinxGem33/Neon/blob/master/artwork/done.svg.png?raw=true)
-|[appindicator](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols2/)|![](https://github.com/LinxGem33/Neon/blob/master/artwork/done.svg.png?raw=true)
+|[cmake](https://www.archlinux.org/packages/extra/x86_64/git/)
+|[gtk+-3.0](https://www.archlinux.org/packages/extra/x86_64/qt5-base/)
+|[sqlite3](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols/)
+|[libgit2](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols2/)
+|[appindicator](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols2/)
 
 3. clone the repo:
 
