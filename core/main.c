@@ -5,8 +5,8 @@
 #include "../ui/window_app_indicator.h"
 #include "../ui/window_settings.h"
 #include "../ui/window_status.h"
-#include "../util/cb_util.h"
-#include "../util/cb_vector.h"
+#include "../util/c/cb_util.h"
+#include "../util/c/cb_vector.h"
 
 #define arrSize 200
 #define bufSize 1024
@@ -160,9 +160,9 @@ int main(int argc, char** argv)
     prepare_addresses();
 
     /* Check for configurations
-         * 1. If it can't find it, create new one and open settings window
-         * 2. If config file exists, it open status window
-         */
+     * 1. If it can't find it, create new one and open settings window
+     * 2. If config file exists, it open status window
+     */
     FILE* fp;
     if ((fp = fopen(db_path, "r")) == NULL) {
         struct stat st = { 0 };

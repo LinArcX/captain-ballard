@@ -3,7 +3,7 @@
 #include <gtk/gtk.h>
 
 #include "../libs/sqlite/sqlite_util.h"
-#include "../util/cb_vector.h"
+#include "../util/c/cb_vector.h"
 
 #define LOG_FILE "/home/linarcx/captain_ballard.log"
 
@@ -32,30 +32,30 @@ void close_settings_window(GtkWidget* widget, gpointer data)
 }
 
 GtkWidget* create_filechooser_dialog(char* init_path,
-    GtkFileChooserAction action)
+        GtkFileChooserAction action)
 {
     GtkWidget* file_chooser_dialog = NULL;
     switch (action) {
-    case GTK_FILE_CHOOSER_ACTION_SAVE:
-        file_chooser_dialog = gtk_file_chooser_dialog_new("Save file", NULL, action, "Cancel",
-            GTK_RESPONSE_CANCEL, "Save",
-            GTK_RESPONSE_OK, NULL);
-        break;
+        case GTK_FILE_CHOOSER_ACTION_SAVE:
+            file_chooser_dialog = gtk_file_chooser_dialog_new("Save file", NULL, action, "Cancel",
+                    GTK_RESPONSE_CANCEL, "Save",
+                    GTK_RESPONSE_OK, NULL);
+            break;
 
-    case GTK_FILE_CHOOSER_ACTION_OPEN:
-        file_chooser_dialog = gtk_file_chooser_dialog_new("Open file", NULL, action, "Cancel",
-            GTK_RESPONSE_CANCEL, "Open",
-            GTK_RESPONSE_OK, NULL);
-        break;
+        case GTK_FILE_CHOOSER_ACTION_OPEN:
+            file_chooser_dialog = gtk_file_chooser_dialog_new("Open file", NULL, action, "Cancel",
+                    GTK_RESPONSE_CANCEL, "Open",
+                    GTK_RESPONSE_OK, NULL);
+            break;
 
-    case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
-        file_chooser_dialog = gtk_file_chooser_dialog_new("Select folder", NULL, action, "Cancel",
-            GTK_RESPONSE_CANCEL, "Open",
-            GTK_RESPONSE_OK, NULL);
-        break;
+        case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
+            file_chooser_dialog = gtk_file_chooser_dialog_new("Select folder", NULL, action, "Cancel",
+                    GTK_RESPONSE_CANCEL, "Open",
+                    GTK_RESPONSE_OK, NULL);
+            break;
 
-    case GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER:
-        break;
+        case GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER:
+            break;
     }
     return file_chooser_dialog;
 }
@@ -177,15 +177,15 @@ void save_settings(GtkWidget* widget, gpointer data)
 
         // Settings
         create_table(db_path, "CREATE TABLE settings("
-                              "ID   INTEGER PRIMARY KEY AUTOINCREMENT,"
-                              "period   TEXT NOT NULL);");
+                "ID   INTEGER PRIMARY KEY AUTOINCREMENT,"
+                "period   TEXT NOT NULL);");
         wipe_table(db_path, "DELETE from settings;");
         insert_settings(db_path, period);
 
         // Projects
         create_table(db_path, "CREATE TABLE projects("
-                              "ID   INTEGER PRIMARY KEY AUTOINCREMENT,"
-                              "path TEXT    NOT NULL);");
+                "ID   INTEGER PRIMARY KEY AUTOINCREMENT,"
+                "path TEXT    NOT NULL);");
         wipe_table(db_path, "DELETE from projects;");
 
         //gtk_list_store
@@ -348,7 +348,7 @@ void show_settings_window(char* db_path)
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
     gtk_window_set_position(window, GTK_WIN_POS_CENTER);
-    gtk_window_set_icon_from_file(window, "../assets/captain-cap.png", NULL);
+    gtk_window_set_icon_from_file(window, "../util/images/captain-cap.png", NULL);
 
     /* Create settings_tab */
     settings_tabs = gtk_notebook_new();

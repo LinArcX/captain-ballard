@@ -1,0 +1,4 @@
+version: 1.0.0
+Features:
+    - Watch .git directories and see the change after an adjustale
+    period of time.

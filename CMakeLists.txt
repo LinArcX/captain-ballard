@@ -13,8 +13,8 @@ LINK_DIRECTORIES(${captain-ballard_LIBRARY_DIRS})
 ADD_DEFINITIONS(${captain-ballard_CFLAGS_OTHER})
 
 include_directories(src)
-file(GLOB SOURCES core/*.c libs/**/*.c ui/*.c util/*.c)
-file(GLOB HEADERS core/*.h libs/**/*.h ui/*.h util/*.h)
+file(GLOB SOURCES core/*.c libs/**/*.c ui/*.c util/c/*.c)
+file(GLOB HEADERS core/*.h libs/**/*.h ui/*.h util/c/*.h)
 
 ADD_EXECUTABLE(captain-ballard ${SOURCES} ${HEADERS})
 

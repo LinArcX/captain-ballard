@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include <libappindicator3-0.1/libappindicator/app-indicator.h>
 
-#include "../util/cb_file.h"
+#include "../util/c/cb_file.h"
 #include "window_settings.h"
 
 void m_item_exit_selected(GtkMenuItem* menuitem, gpointer user_data)
@@ -30,21 +30,21 @@ void m_item_about_us_selected(GtkMenuItem* menuitem, gpointer user_data)
     const char* documenters[1];
     documenters[0] = "Neo";
 
-    GdkPixbuf* captain_ballard_logo = gdk_pixbuf_new_from_file("../assets/captain-cap.png", NULL);
+    GdkPixbuf* captain_ballard_logo = gdk_pixbuf_new_from_file("../util/images/captain-cap.png", NULL);
     gtk_show_about_dialog(NULL,
-        "title", ("About Captain Ballard"),
-        "logo", captain_ballard_logo,
-        "website", "https://github.com/LinArcX/captain-ballard",
-        "website-label", "Captain Ballard",
-        "version", "version: 0.1.0",
-        "comments", "App that protect your .git projects.",
-        "license-type", GTK_LICENSE_GPL_3_0,
-        "wrap-license", 1,
-        "authors", authors,
-        "translator-credits", "Trinity",
-        "documenters", documenters,
-        "artists", artists,
-        NULL);
+            "title", ("About Captain Ballard"),
+            "logo", captain_ballard_logo,
+            "website", "https://github.com/LinArcX/captain-ballard",
+            "website-label", "Captain Ballard",
+            "version", "version: 0.1.0",
+            "comments", "App that protect your .git projects.",
+            "license-type", GTK_LICENSE_GPL_3_0,
+            "wrap-license", 1,
+            "authors", authors,
+            "translator-credits", "Trinity",
+            "documenters", documenters,
+            "artists", artists,
+            NULL);
 
     //"copyright", "Copyright © 2019-2020 LinArcX",
     //"program-name", "Captain Ballard",
@@ -65,7 +65,7 @@ void show_tray_window(char* db_path)
 
     // Settings
     GtkWidget* box_settings = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    GtkWidget* icon_settings = gtk_image_new_from_file("../assets/settings.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
+    GtkWidget* icon_settings = gtk_image_new_from_file("../util/images/settings.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
     gtk_image_set_pixel_size(icon_settings, 10);
     GtkWidget* label_settings = gtk_label_new("Settings");
     m_item_settings = gtk_menu_item_new();
@@ -75,7 +75,7 @@ void show_tray_window(char* db_path)
 
     // About Us
     GtkWidget* box_about_us = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    GtkWidget* icon_about_us = gtk_image_new_from_file("../assets/about_us.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
+    GtkWidget* icon_about_us = gtk_image_new_from_file("../util/images/about_us.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
     gtk_image_set_pixel_size(icon_about_us, 10);
     GtkWidget* label_about_us = gtk_label_new("About Us");
     m_item_about_us = gtk_menu_item_new();
@@ -85,7 +85,7 @@ void show_tray_window(char* db_path)
 
     // Exit
     GtkWidget* box_exit = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    GtkWidget* icon_exit = gtk_image_new_from_file("../assets/exit.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
+    GtkWidget* icon_exit = gtk_image_new_from_file("../util/images/exit.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
     gtk_image_set_pixel_size(icon_exit, 10);
     GtkWidget* label_exit = gtk_label_new("Exit");
     m_item_exit = gtk_menu_item_new();
@@ -105,7 +105,7 @@ void show_tray_window(char* db_path)
     g_signal_connect(m_item_about_us, "activate", G_CALLBACK(m_item_about_us_selected), NULL);
     g_signal_connect(m_item_exit, "activate", G_CALLBACK(m_item_exit_selected), NULL);
 
-    gchar* icon_name = "../assets/captain-cap.png"; //"indicator-messages"
+    gchar* icon_name = "../util/images/captain-cap.png"; //"indicator-messages"
     indicator = app_indicator_new("example-simple-client", icon_name, APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
     app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
     app_indicator_set_attention_icon(indicator, "indicator-messages-new");

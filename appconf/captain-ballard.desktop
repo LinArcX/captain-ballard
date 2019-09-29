@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=captain-ballard
+Comment=Git-aware app that protect your projects before too late!
+Exec=captain-ballard
+Icon=captain-ballard
+Terminal=false
+Type=Application
+Keywords=Utility;
+Categories=Utility;GTK;

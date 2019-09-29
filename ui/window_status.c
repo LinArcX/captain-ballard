@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
 
-#include "../util/cb_vector.h"
+#include "../util/c/cb_vector.h"
 enum {
     COL_PATH_STATUS = 0,
     NUM_COLS_STATUS
@@ -103,7 +103,7 @@ static GtkWidget* create_view_model_status(void)
     /* --- Column #1 --- */
     renderer = gtk_cell_renderer_text_new();
     gtk_tree_view_insert_column_with_attributes(GTK_TREE_VIEW(view_status), -1, "PATH",
-        renderer, "text", COL_PATH_STATUS, NULL);
+            renderer, "text", COL_PATH_STATUS, NULL);
 
     model_status = create_fill_model_status();
     gtk_tree_view_set_model(GTK_TREE_VIEW(view_status), model_status);
@@ -131,7 +131,7 @@ void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user
     gtk_window_set_default_size(GTK_WINDOW(status_window), 800, 600);
     gtk_window_set_resizable(GTK_WINDOW(status_window), TRUE);
     gtk_window_set_position(status_window, GTK_WIN_POS_CENTER);
-    gtk_window_set_icon_from_file(status_window, "../assets/captain-cap.png", NULL);
+    gtk_window_set_icon_from_file(status_window, "../util/images/captain-cap.png", NULL);
 
     // buttons and their handlers
     combo = gtk_combo_box_text_new();

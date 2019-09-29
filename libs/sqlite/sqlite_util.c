@@ -1,4 +1,4 @@
-#include "../../util/cb_vector.h"
+#include "../../util/c/cb_vector.h"
 
 #include <sqlite3.h>
 #include <stdio.h>

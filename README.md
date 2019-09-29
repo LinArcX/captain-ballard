@@ -2,7 +2,7 @@
 Git-aware app that protect your projects before too late:)
 
 ## Preview
-!["gnulium"](./assets/shots/1.0.0/status.png "captain-ballard")
+!["gnulium"](./shots/1.0.0/status.png "captain-ballard")
 
 ## A long time ago..
 I had lots of projects in my computer and some of them managed by git. after a couple of months, by accident i lost my whole data and projects.
@@ -23,6 +23,7 @@ Watch __.git__ directories on your hard-drive and show a window that contain cha
 |Dependencies||
 |-----|:-----:|
 |[cmake](https://www.archlinux.org/packages/extra/x86_64/git/)
+|[pkg-config](https://www.archlinux.org/packages/extra/x86_64/git/)
 |[gtk+-3.0](https://www.archlinux.org/packages/extra/x86_64/qt5-base/)
 |[sqlite3](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols/)
 |[libgit2](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols2/)
@@ -69,7 +70,7 @@ E-Mail:linarcx@gmail.com
 > Captain Ballard (played by Roy Jones Jr.), was the captain of the Zion hovercraft Caduceus in the film The Matrix Reloaded.
 
 <h1 align="center">
-	<img width="200" src="assets/captain.svg" alt="captain-ballard">
+	<img width="200" src="./util/images/captain.svg" alt="captain-ballard">
 	<br>
 	<br>
     <p2>captain-ballard</p2>
