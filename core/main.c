@@ -12,8 +12,9 @@
 #define bufSize 1024
 #define LOG_FILE "/home/linarcx/captain_ballard.log"
 
-char* address;
-char* full_address;
+char* db_path_parent_dir;
+char* db_path;
+
 char** files = NULL;
 char*** all_files = NULL;
 
@@ -59,6 +60,10 @@ int check_projects(char* address)
             c = s->index_to_workdir->new_file.path;
             vector_push_back(files, (char*)c);
         }
+        if (s->status == GIT_STATUS_WT_MODIFIED) {
+            c = s->index_to_workdir->new_file.path;
+            vector_push_back(files, (char*)c);
+        }
     }
 
     vector_push_back(all_files, files);
@@ -90,12 +95,13 @@ void wipe_out_arrays()
     }
 }
 
-void prepare_status_window(char* full_address)
+void prepare_status_window(char* db_path)
 {
     GList* m_list = gtk_window_list_toplevels();
+
     if (g_list_length(m_list) <= 3) {
         sqlite3* db;
-        int db_status = open_db(&db, full_address);
+        int db_status = open_db(&db, db_path);
         if (db_status) {
             wipe_out_arrays();
 
@@ -119,30 +125,30 @@ void prepare_status_window(char* full_address)
 
 static void show_status_window_Func(gpointer user_data)
 {
-    char* full_address = user_data;
-    prepare_status_window(full_address);
+    char* db_path = user_data;
+    prepare_status_window(db_path);
 }
 
 void prepare_addresses()
 {
-    full_address = malloc(sizeof(char) * arrSize);
-    address = malloc(sizeof(char) * arrSize);
+    db_path = malloc(sizeof(char) * arrSize);
+    db_path_parent_dir = malloc(sizeof(char) * arrSize);
 
-    memset(full_address, 0, sizeof(char) * arrSize);
-    memset(address, 0, sizeof(char) * arrSize);
+    memset(db_path, 0, sizeof(char) * arrSize);
+    memset(db_path_parent_dir, 0, sizeof(char) * arrSize);
 
     char* home_name = "/home/";
     char* user_name = get_current_user_name();
-    char* primitive_path = "/.config/CaptainBallard/config.db";
-    char* primitive_directory = "/.config/CaptainBallard";
+    char* relative_path = "/.config/captain-ballard/config.db";
+    char* parent_directory = "/.config/captain-ballard";
 
-    strcat(full_address, home_name);
-    strcat(full_address, user_name);
-    strcat(full_address, primitive_path);
+    strcat(db_path, home_name);
+    strcat(db_path, user_name);
+    strcat(db_path, relative_path);
 
-    strcat(address, home_name);
-    strcat(address, user_name);
-    strcat(address, primitive_directory);
+    strcat(db_path_parent_dir, home_name);
+    strcat(db_path_parent_dir, user_name);
+    strcat(db_path_parent_dir, parent_directory);
 }
 
 int main(int argc, char** argv)
@@ -150,26 +156,36 @@ int main(int argc, char** argv)
     // Initialize gtk
     gtk_init(&argc, &argv);
 
-    // Show tray window
-    show_tray_window(full_address);
-
     // create config file
     prepare_addresses();
 
     /* Check for configurations
-     * 1. If it can't find it, create new one and open settings window
-     * 2. If config file exists, it open status window
-     */
+         * 1. If it can't find it, create new one and open settings window
+         * 2. If config file exists, it open status window
+         */
     FILE* fp;
-    if ((fp = fopen(full_address, "r")) == NULL) {
+    if ((fp = fopen(db_path, "r")) == NULL) {
         struct stat st = { 0 };
-        if (stat(address, &st) == -1) {
-            mkdir(address, 0700);
+        if (stat(db_path_parent_dir, &st) == -1) {
+            mkdir(db_path_parent_dir, 0700);
         }
-        show_settings_window(full_address);
+        show_settings_window(db_path);
     } else {
-        gint tag = g_timeout_add(5000, show_status_window_Func, full_address);
+        // Read "period" vale from database and update combobox, but before that check if database exits or not!
+        FILE* fp;
+        const char* period;
+
+        if ((fp = fopen(db_path, "r")) != NULL) {
+            period = get_period(db_path);
+        }
+        int i_period = atoi(period) * 60 * 1000;
+        //log_message_i(LOG_FILE, i_period);
+
+        gint tag = g_timeout_add(i_period, show_status_window_Func, db_path);
     }
+
+    // Show tray window
+    show_tray_window(db_path);
 
     gtk_main();
     return 0;

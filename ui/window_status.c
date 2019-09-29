@@ -118,8 +118,7 @@ void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user
     gchar*** all_files = user_data;
 
     GtkWidget *view, *scrolled_win, *hbox, *vbox;
-    GtkWidget* combo;
-    GtkWidget *btn_close, *btn_add, *btn_commit, *btn_push;
+    GtkWidget *combo, *btn_add, *btn_commit, *btn_push;
     GtkWidget* status_window;
     GtkApplication* status_app;
 
@@ -131,6 +130,8 @@ void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user
     gtk_container_set_border_width(GTK_CONTAINER(status_window), 10);
     gtk_window_set_default_size(GTK_WINDOW(status_window), 800, 600);
     gtk_window_set_resizable(GTK_WINDOW(status_window), TRUE);
+    gtk_window_set_position(status_window, GTK_WIN_POS_CENTER);
+    gtk_window_set_icon_from_file(status_window, "../assets/captain-cap.png", NULL);
 
     // buttons and their handlers
     combo = gtk_combo_box_text_new();
@@ -144,9 +145,6 @@ void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user
 
     btn_push = gtk_button_new_with_label("Push");
     g_signal_connect(btn_push, "clicked", G_CALLBACK(push_files), NULL);
-
-    btn_close = gtk_button_new_with_label("Close");
-    g_signal_connect_swapped(btn_close, "clicked", G_CALLBACK(close_status_window), status_window); //gtk_widget_destroy
 
     //gtk_combo_box_text_append_text(GTK_COMBO_BOX(combo), "sa");
     if (all_files) {
@@ -164,10 +162,9 @@ void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user
 
     hbox = gtk_hbox_new(FALSE, 5);
     gtk_box_pack_start(GTK_BOX(hbox), combo, TRUE, TRUE, 1);
-    gtk_box_pack_start(GTK_BOX(hbox), btn_add, TRUE, TRUE, 1);
-    gtk_box_pack_start(GTK_BOX(hbox), btn_commit, TRUE, TRUE, 1);
-    gtk_box_pack_start(GTK_BOX(hbox), btn_push, TRUE, TRUE, 1);
-    gtk_box_pack_start(GTK_BOX(hbox), btn_close, TRUE, TRUE, 1);
+    //gtk_box_pack_start(GTK_BOX(hbox), btn_add, TRUE, TRUE, 1);
+    //gtk_box_pack_start(GTK_BOX(hbox), btn_commit, TRUE, TRUE, 1);
+    //gtk_box_pack_start(GTK_BOX(hbox), btn_push, TRUE, TRUE, 1);
 
     vbox = gtk_vbox_new(FALSE, 5);
     gtk_box_pack_start(GTK_BOX(vbox), scrolled_win, TRUE, TRUE, 0);
@@ -177,6 +174,11 @@ void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user
     gtk_combo_box_set_active(combo, 0);
     gtk_widget_show_all(status_window);
     g_object_unref(status_app);
+
     //g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(gtk_main_quit), NULL);
     //g_signal_connect(window, "delete_event", gtk_main_quit, NULL);
+
+    //gtk_box_pack_start(GTK_BOX(hbox), btn_close, TRUE, TRUE, 1);
+    //btn_close = gtk_button_new_with_label("Close");
+    //g_signal_connect_swapped(btn_close, "clicked", G_CALLBACK(close_status_window), status_window); //gtk_widget_destroy
 }

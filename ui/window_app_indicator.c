@@ -13,8 +13,8 @@ void m_item_exit_selected(GtkMenuItem* menuitem, gpointer user_data)
 
 void m_item_settings_selected(GtkMenuItem* menuitem, gpointer user_data)
 {
-    char* full_address = user_data;
-    show_settings_window(full_address);
+    char* db_path = user_data;
+    show_settings_window(db_path);
 }
 
 void m_item_about_us_selected(GtkMenuItem* menuitem, gpointer user_data)
@@ -34,7 +34,7 @@ void m_item_about_us_selected(GtkMenuItem* menuitem, gpointer user_data)
     gtk_show_about_dialog(NULL,
         "title", ("About Captain Ballard"),
         "logo", captain_ballard_logo,
-        "website", "https://github.com/LinArcX/CaptainBallard",
+        "website", "https://github.com/LinArcX/captain-ballard",
         "website-label", "Captain Ballard",
         "version", "version: 0.1.0",
         "comments", "App that protect your .git projects.",
@@ -51,7 +51,7 @@ void m_item_about_us_selected(GtkMenuItem* menuitem, gpointer user_data)
     //"license", license,
 }
 
-void show_tray_window(char* full_address)
+void show_tray_window(char* db_path)
 {
     GtkWidget* menu;
     AppIndicator* indicator;
@@ -101,7 +101,7 @@ void show_tray_window(char* full_address)
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), m_item_separator);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), m_item_exit);
 
-    g_signal_connect(m_item_settings, "activate", G_CALLBACK(m_item_settings_selected), full_address);
+    g_signal_connect(m_item_settings, "activate", G_CALLBACK(m_item_settings_selected), db_path);
     g_signal_connect(m_item_about_us, "activate", G_CALLBACK(m_item_about_us_selected), NULL);
     g_signal_connect(m_item_exit, "activate", G_CALLBACK(m_item_exit_selected), NULL);
 

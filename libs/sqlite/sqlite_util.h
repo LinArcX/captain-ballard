@@ -2,10 +2,15 @@
 #define SQLITE_UITL_H
 #include <sqlite3.h>
 
-int open_db(sqlite3** db, char* address);
-int exec_sql(sqlite3** db, char* insert_sql);
+int open_db(sqlite3** db, char* db_path);
+int exec_sql(sqlite3** db, char* stmt);
 
-void wipe_out_table(char* full_address);
-void create_settings_table(char* full_address);
-void add_project_path(char* full_address, char path[512]);
+void create_table(char* db_path, char* stmt);
+void wipe_table(char* db_path, char* stmt);
+
+char* get_period(char* db_path);
+char** get_projects(char* db_path);
+
+void insert_path(char* db_path, char path[512]);
+void insert_settings(char* db_path, char* period);
 #endif
