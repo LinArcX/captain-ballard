@@ -14,8 +14,8 @@ Watch __.git__ directories on your computer and periodically reports the latest 
 ### Void
 `sudo xbps-install captain-ballard`
 
-### Arch
-[WIP]
+### [Arch](https://aur.archlinux.org/packages/captain-ballard/)
+`sudo trizen -S captain-ballard`
 
 ### Build From Source
 2. Install these dependencies first:
