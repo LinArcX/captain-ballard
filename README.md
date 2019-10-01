@@ -1,5 +1,5 @@
 # captain-ballard ![Language](https://img.shields.io/github/languages/top/LinArcX/captain-ballard.svg?style=flat-square) ![RepoSize](https://img.shields.io/github/repo-size/LinArcX/captain-ballard.svg?style=flat-square) ![Latest Tag](https://img.shields.io/github/tag/LinArcX/captain-ballard.svg?colorB=green&style=flat-square)
-Git-aware app that protect your projects before too late:)
+Git-Aware app that protect your .git based projects before too late:)
 
 ## Preview
 !["gnulium"](./shots/1.0.0/status.png "captain-ballard")
@@ -9,10 +9,10 @@ I had lots of projects in my computer and some of them managed by git. after a c
 And that accident was a good motivation for me to keep my projects safe.
 
 ## Features
-Watch __.git__ directories on your hard-drive and show a window that contain changes in your projects periodically(You can adjust the period time).
+Watch __.git__ directories on your computer and periodically reports the latest changes via showing a window called: __status_window__.(You can adjust the period time).
 
 ### Void
-[WIP]
+`sudo xbps-install captain-ballard`
 
 ### Arch
 [WIP]
@@ -24,10 +24,11 @@ Watch __.git__ directories on your hard-drive and show a window that contain cha
 |-----|:-----:|
 |[cmake](https://www.archlinux.org/packages/extra/x86_64/git/)
 |[pkg-config](https://www.archlinux.org/packages/extra/x86_64/git/)
-|[gtk+-3.0](https://www.archlinux.org/packages/extra/x86_64/qt5-base/)
-|[sqlite3](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols/)
-|[libgit2](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols2/)
-|[appindicator](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols2/)
+|[gtk+3-devel](https://www.archlinux.org/packages/extra/x86_64/qt5-base/)
+|[glib-devel](https://www.archlinux.org/packages/extra/x86_64/qt5-base/)
+|[sqlite-devel](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols/)
+|[libgit2-devel](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols2/)
+|[libappindicator-devel](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols2/)
 
 3. clone the repo:
 
@@ -67,7 +68,7 @@ Bugs should be reported [here](https://github.com/LinArcX/captain-ballard/issues
 E-Mail:linarcx@gmail.com
 
 <h1 align="center">
-	<img width="200" src="./util/images/captain.svg" alt="captain-ballard">
+	<img width="200" src="./util/icons/captain.svg" alt="captain-ballard">
 	<br>
 	<br>
     <p2>captain-ballard</p2>
