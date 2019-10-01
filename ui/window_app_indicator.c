@@ -19,25 +19,13 @@ void m_item_settings_selected(GtkMenuItem* menuitem, gpointer user_data)
 
 void m_item_about_us_selected(GtkMenuItem* menuitem, gpointer user_data)
 {
-    //char* m_license = read_file_return_content("../LICENSE");
-
-    const char* authors[1];
-    authors[0] = "LinArcX";
-
-    const char* artists[1];
-    artists[0] = "Morpheous";
-
-    const char* documenters[1];
-    documenters[0] = "Neo";
-
-    static GdkPixbuf *captain_ballard_logo = NULL;
-    GInputStream *stream = g_resources_open_stream ("/io/linarcx/captain_ballard/captain-cap.png", 0, NULL);
-    if (stream != NULL) {
-        captain_ballard_logo = gdk_pixbuf_new_from_stream (stream, NULL, NULL);
-        g_object_unref (stream);
+    GdkPixbuf *captain_ballard_logo = NULL;
+    GInputStream *log_stream = g_resources_open_stream ("/io/linarcx/captain_ballard/captain-cap.png", 0, NULL);
+    if (log_stream != NULL) {
+        captain_ballard_logo = gdk_pixbuf_new_from_stream (log_stream, NULL, NULL);
+        g_object_unref (log_stream);
     }
 
-    //GdkPixbuf* captain_ballard_logo = gdk_pixbuf_new_from_file("../util/images/captain-cap.png", NULL);
     gtk_show_about_dialog(NULL,
             "title", ("About Captain Ballard"),
             "logo", captain_ballard_logo,
@@ -47,15 +35,7 @@ void m_item_about_us_selected(GtkMenuItem* menuitem, gpointer user_data)
             "comments", "App that protect your .git projects.",
             "license-type", GTK_LICENSE_GPL_3_0,
             "wrap-license", 1,
-            "authors", authors,
-            "translator-credits", "Trinity",
-            "documenters", documenters,
-            "artists", artists,
             NULL);
-
-    //"copyright", "Copyright © 2019-2020 LinArcX",
-    //"program-name", "Captain Ballard",
-    //"license", license,
 }
 
 void show_tray_window(char* db_path)
@@ -112,11 +92,35 @@ void show_tray_window(char* db_path)
     g_signal_connect(m_item_about_us, "activate", G_CALLBACK(m_item_about_us_selected), NULL);
     g_signal_connect(m_item_exit, "activate", G_CALLBACK(m_item_exit_selected), NULL);
 
-    gchar* icon_name = "/io/linarcx/captain_ballard/captain-cap.png"; //"indicator-messages"
-    indicator = app_indicator_new("example-simple-client", icon_name, APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+    indicator = app_indicator_new("example-simple-client", "indicator-messages", APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
     app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
     app_indicator_set_attention_icon(indicator, "indicator-messages-new");
     app_indicator_set_menu(indicator, GTK_MENU(menu));
 
     gtk_widget_show_all(menu);
 }
+
+//gchar* icon_name = "/io/linarcx/captain_ballard/captain-cap.png"; //"indicator-messages"
+//indicator = app_indicator_new("example-simple-client", "resource:///io/linarcx/captain_ballard/exit.png", APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+//indicator = app_indicator_new("example-simple-client", "../util/icons/captain-cap.png", APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
+//app_indicator_set_icon_full(indicator, LOCAL_ICON, "Local Icon");
+
+//    char* m_license = read_file_return_content("../LICENSE");
+
+//    const char* authors[1];
+//    authors[0] = "LinArcX";
+//
+//    const char* artists[1];
+//    artists[0] = "Morpheous";
+//
+//    const char* documenters[1];
+//    documenters[0] = "Neo";
+//    GdkPixbuf* captain_ballard_logo = gdk_pixbuf_new_from_file("../util/icons/captain-cap.png", NULL);
+
+//            "authors", authors,
+//            "translator-credits", "Trinity",
+//            "documenters", documenters,
+//            "artists", artists,
+//            "copyright", "Copyright © 2019-2020 LinArcX",
+//            "program-name", "Captain Ballard",
+//            "license", license,
