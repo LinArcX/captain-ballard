@@ -131,7 +131,17 @@ void show_status_window(char*** user_data) //(GtkApplication* app, gpointer user
     gtk_window_set_default_size(GTK_WINDOW(status_window), 800, 600);
     gtk_window_set_resizable(GTK_WINDOW(status_window), TRUE);
     gtk_window_set_position(status_window, GTK_WIN_POS_CENTER);
-    gtk_window_set_icon_from_file(status_window, "../util/images/captain-cap.png", NULL);
+    //gtk_image_new_from_resource("/io/linarcx/captain_ballard/about_us.png");
+
+    static GdkPixbuf *window_icon = NULL;
+    GInputStream *stream = g_resources_open_stream ("/io/linarcx/captain_ballard/captain-cap.png", 0, NULL);
+    if (stream != NULL) {
+        window_icon = gdk_pixbuf_new_from_stream (stream, NULL, NULL);
+        g_object_unref (stream);
+    }
+    gtk_window_set_icon(status_window, window_icon);
+
+    //gtk_window_set_icon_from_file(status_window, "/io/linarcx/captain_ballard/about_us.png", NULL);//"../util/images/captain-cap.png", NULL);
 
     // buttons and their handlers
     combo = gtk_combo_box_text_new();

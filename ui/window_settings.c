@@ -348,7 +348,16 @@ void show_settings_window(char* db_path)
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 400);
     gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
     gtk_window_set_position(window, GTK_WIN_POS_CENTER);
-    gtk_window_set_icon_from_file(window, "../util/images/captain-cap.png", NULL);
+
+    static GdkPixbuf *window_icon = NULL;
+    GInputStream *stream = g_resources_open_stream ("/io/linarcx/captain_ballard/captain-cap.png", 0, NULL);
+    if (stream != NULL) {
+        window_icon = gdk_pixbuf_new_from_stream (stream, NULL, NULL);
+        g_object_unref (stream);
+    }
+    gtk_window_set_icon(window, window_icon);
+
+    //gtk_window_set_icon_from_file(window, "../util/icons/captain-cap.png", NULL);
 
     /* Create settings_tab */
     settings_tabs = gtk_notebook_new();

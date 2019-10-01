@@ -1,3 +1,4 @@
+#include <git2/remote.h>
 #include <gtk/gtk.h>
 
 #include "../libs/libgit/git_common.h"

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="/io/linarcx/captain_ballard">
+        <file alias="about_us.png">icons/about_us.png</file>
+        <file alias="ballard.jpg">icons/ballard.jpg</file>
+        <file alias="captain.svg">icons/captain.svg</file>
+        <file alias="captain-cap.png">icons/captain-cap.png</file>
+        <file alias="exit.png">icons/exit.png</file>
+        <file alias="settings.png">icons/settings.png</file>
+    </gresource>
+</gresources>

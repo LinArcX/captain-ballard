@@ -30,7 +30,14 @@ void m_item_about_us_selected(GtkMenuItem* menuitem, gpointer user_data)
     const char* documenters[1];
     documenters[0] = "Neo";
 
-    GdkPixbuf* captain_ballard_logo = gdk_pixbuf_new_from_file("../util/images/captain-cap.png", NULL);
+    static GdkPixbuf *captain_ballard_logo = NULL;
+    GInputStream *stream = g_resources_open_stream ("/io/linarcx/captain_ballard/captain-cap.png", 0, NULL);
+    if (stream != NULL) {
+        captain_ballard_logo = gdk_pixbuf_new_from_stream (stream, NULL, NULL);
+        g_object_unref (stream);
+    }
+
+    //GdkPixbuf* captain_ballard_logo = gdk_pixbuf_new_from_file("../util/images/captain-cap.png", NULL);
     gtk_show_about_dialog(NULL,
             "title", ("About Captain Ballard"),
             "logo", captain_ballard_logo,
@@ -65,7 +72,7 @@ void show_tray_window(char* db_path)
 
     // Settings
     GtkWidget* box_settings = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    GtkWidget* icon_settings = gtk_image_new_from_file("../util/images/settings.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
+    GtkWidget* icon_settings = gtk_image_new_from_resource("/io/linarcx/captain_ballard/settings.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
     gtk_image_set_pixel_size(icon_settings, 10);
     GtkWidget* label_settings = gtk_label_new("Settings");
     m_item_settings = gtk_menu_item_new();
@@ -75,7 +82,7 @@ void show_tray_window(char* db_path)
 
     // About Us
     GtkWidget* box_about_us = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    GtkWidget* icon_about_us = gtk_image_new_from_file("../util/images/about_us.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
+    GtkWidget* icon_about_us = gtk_image_new_from_resource("/io/linarcx/captain_ballard/about_us.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
     gtk_image_set_pixel_size(icon_about_us, 10);
     GtkWidget* label_about_us = gtk_label_new("About Us");
     m_item_about_us = gtk_menu_item_new();
@@ -85,7 +92,7 @@ void show_tray_window(char* db_path)
 
     // Exit
     GtkWidget* box_exit = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-    GtkWidget* icon_exit = gtk_image_new_from_file("../util/images/exit.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
+    GtkWidget* icon_exit = gtk_image_new_from_resource("/io/linarcx/captain_ballard/exit.png"); //, GTK_ICON_SIZE_MENU); //folder-music-symbolic
     gtk_image_set_pixel_size(icon_exit, 10);
     GtkWidget* label_exit = gtk_label_new("Exit");
     m_item_exit = gtk_menu_item_new();
@@ -105,7 +112,7 @@ void show_tray_window(char* db_path)
     g_signal_connect(m_item_about_us, "activate", G_CALLBACK(m_item_about_us_selected), NULL);
     g_signal_connect(m_item_exit, "activate", G_CALLBACK(m_item_exit_selected), NULL);
 
-    gchar* icon_name = "../util/images/captain-cap.png"; //"indicator-messages"
+    gchar* icon_name = "/io/linarcx/captain_ballard/captain-cap.png"; //"indicator-messages"
     indicator = app_indicator_new("example-simple-client", icon_name, APP_INDICATOR_CATEGORY_APPLICATION_STATUS);
     app_indicator_set_status(indicator, APP_INDICATOR_STATUS_ACTIVE);
     app_indicator_set_attention_icon(indicator, "indicator-messages-new");
