@@ -10,6 +10,7 @@ And this gave me a good motivation to start a project that monitors my projects 
 
 ## Features
 Watches __.git__ directories on your computer and periodically reports the latest changes popping up a window titled: __status_window__.
+
 You can adjust the interval as most convenient for you.
 
 ### [Void](https://github.com/void-linux/void-packages/pull/14916)
@@ -23,13 +24,13 @@ You can adjust the interval as most convenient for you.
 
 |Dependencies||
 |-----|:-----:|
-|[cmake](https://www.archlinux.org/packages/extra/x86_64/git/)
-|[pkg-config](https://www.archlinux.org/packages/extra/x86_64/git/)
-|[gtk+3-devel](https://www.archlinux.org/packages/extra/x86_64/qt5-base/)
-|[glib-devel](https://www.archlinux.org/packages/extra/x86_64/qt5-base/)
-|[sqlite-devel](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols/)
-|[libgit2-devel](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols2/)
-|[libappindicator-devel](https://www.archlinux.org/packages/extra/x86_64/qt5-quickcontrols2/)
+|[cmake](https://www.archlinux.org/packages/extra/x86_64/cmake/)
+|[pkg-config](https://www.archlinux.org/packages/core/x86_64/pkgconf/)
+|[gtk+3-devel](https://www.archlinux.org/packages/extra/x86_64/gtk3/)
+|[glib-devel](https://www.archlinux.org/packages/core/x86_64/glib2/)
+|[sqlite-devel](https://www.archlinux.org/packages/core/x86_64/sqlite/)
+|[libgit2-devel](https://www.archlinux.org/packages/extra/x86_64/libgit2/)
+|[libappindicator-devel](https://www.archlinux.org/packages/community/x86_64/libappindicator-gtk3/)
 
 3. clone the repo:
 

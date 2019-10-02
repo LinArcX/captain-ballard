@@ -1,15 +1,15 @@
 # Maintainer: LinArcx <linarcx@gmail.com>
 
-pkgname='kindd-git'
-pkgver=r6.13e189e
+pkgname='captain-ballard'
+pkgver=1.0.0.r1.g44f8951
 pkgrel=1
-pkgdesc=" A Kindflul dd gui written in qt quick. (Github version)"
+pkgdesc="Watch your .git directories periodically and reports the latest changes. (Github version)"
 arch=('any')
-url="https://github.com/LinArcX/Kindd"
+url="https://github.com/LinArcX/captain-ballard"
 license=('GPL-3.0')
-depends=('coreutils' 'polkit' 'qt5-quickcontrols2' 'qt5-quickcontrols' 'qt5-graphicaleffects' 'qt5-multimedia')
-makedepends=('git' 'qt5-base')
-source=("${pkgname}::git+https://github.com/LinArcX/Kindd.git")
+makedepends=('git' 'cmake' 'pkgconf' 'glib')
+depends=('gtk3' 'sqlite' 'libgit2' 'libappindicator-gtk3')
+source=("${pkgname}::git+https://github.com/LinArcX/captain-ballard.git")
 sha256sums=('SKIP')
 
 pkgver() {
@@ -22,15 +22,14 @@ pkgver() {
 
 build() {
   cd "${srcdir}/${pkgname}"
-  qmake
+  mkdir build; cd build/
+  cmake -DCMAKE_BUILD_TYPE=Release ../
   make
 }
 
 package() {
   cd "${srcdir}/${pkgname}"
-  install -Dm755 ./kindd ${pkgdir}/usr/bin/kindd
-  install -Dm644 ./appconf/kindd.desktop ${pkgdir}/usr/share/applications/kindd.desktop
-  install -Dm644 ./appconf/kindd.svg ${pkgdir}/usr/share/pixmaps/kindd.svg
-  install -Dm644 ./LICENSE ${pkgdir}/usr/share/licenses/kindd/LICENSE
+  install -Dm755 ./release/captain-ballard ${pkgdir}/usr/bin/captain-ballard
+  install -Dm644 ./appconf/captain-ballard.desktop ${pkgdir}/usr/share/applications/captain-ballard.desktop
+  install -Dm644 ./appconf/captain-ballard.svg ${pkgdir}/usr/share/pixmaps/captain-ballard.svg
 }
-
