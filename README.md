@@ -1,15 +1,16 @@
 # captain-ballard ![Language](https://img.shields.io/github/languages/top/LinArcX/captain-ballard.svg?style=flat-square) ![RepoSize](https://img.shields.io/github/repo-size/LinArcX/captain-ballard.svg?style=flat-square) ![Latest Tag](https://img.shields.io/github/tag/LinArcX/captain-ballard.svg?colorB=green&style=flat-square)
-Git-Aware app that protect your .git based projects before too late:)
+A git-aware app that protects your git-based projects before it's too late :)
 
 ## Preview
 !["gnulium"](./shots/1.0.0/status.png "captain-ballard")
 
 ## A long time ago..
-I had lots of projects in my computer and some of them managed by git. after a couple of months, by accident i lost my whole data and projects.
-And that accident was a good motivation for me to keep my projects safe.
+I had many projects on my computer some of which were managed by git. After a couple of months, I accidentally lost all of my data and projects.
+And this gave me a good motivation to start a project that monitors my projects and reports me the changes periodically.
 
 ## Features
-Watch __.git__ directories on your computer and periodically reports the latest changes via showing a window called: __status_window__.(You can adjust the period time).
+Watches __.git__ directories on your computer and periodically reports the latest changes popping up a window titled: status_window.
+You can adjust the interval as most convenient for you.
 
 ### Void
 `sudo xbps-install captain-ballard`
