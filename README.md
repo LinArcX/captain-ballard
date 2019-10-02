@@ -9,10 +9,10 @@ I had many projects on my computer some of which were managed by git. After a co
 And this gave me a good motivation to start a project that monitors my projects and reports me the changes periodically.
 
 ## Features
-Watches __.git__ directories on your computer and periodically reports the latest changes popping up a window titled: status_window.
+Watches __.git__ directories on your computer and periodically reports the latest changes popping up a window titled: __status_window__.
 You can adjust the interval as most convenient for you.
 
-### Void
+### [Void](https://github.com/void-linux/void-packages/pull/14916)
 `sudo xbps-install captain-ballard`
 
 ### [Arch](https://aur.archlinux.org/packages/captain-ballard/)
