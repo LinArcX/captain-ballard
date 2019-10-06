@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=captain-ballard
-Comment=Git-aware app that protect your projects before too late!
+GenericName=Watches your .git directories periodically and reports the latest changes.
+Comment=Watches your .git directories periodically and reports the latest changes.
 Exec=captain-ballard
 Icon=captain-ballard
 Terminal=false
