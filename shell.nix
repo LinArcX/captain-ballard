@@ -47,6 +47,7 @@ in
     ];
 
     FONTCONFIG_FILE = "${pkgs.fontconfig.out}/etc/fonts/fonts.conf";
+    LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
 
     shellHook = ''
       export NAME=${pname}
@@ -57,13 +58,3 @@ in
     '';
 
   }
-
-  #  fontDirectories = [
-  #    carlito dejavu_fonts
-  #    freefont_ttf xorg.fontmiscmisc
-  #    liberation_ttf_v1liberation_ttf_v2
-  #  ];
-
-    #LOCALE_ARCHIVE="${glibcLocales}/lib/locale/locale-archive";
-      #unstable.glib.dev
-      #unstable.libgit2-glib
