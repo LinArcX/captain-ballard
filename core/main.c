@@ -1,13 +1,13 @@
 #include <git2/remote.h>
 #include <gtk/gtk.h>
 
-#include "../libs/libgit/git_common.h"
-#include "../libs/sqlite/sqlite_util.h"
-#include "../ui/window_app_indicator.h"
-#include "../ui/window_settings.h"
-#include "../ui/window_status.h"
-#include "../util/c/cb_util.h"
-#include "../util/c/cb_vector.h"
+#include <git_common.h>
+#include <sqlite_util.h>
+#include <window_app_indicator.h>
+#include <window_settings.h>
+#include <window_status.h>
+#include <cb_util.h>
+#include <cb_vector.h>
 
 #define arrSize 200
 #define bufSize 1024

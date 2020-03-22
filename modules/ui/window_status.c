@@ -1,6 +1,6 @@
 #include <gtk/gtk.h>
+#include <cb_vector.h>
 
-#include "../util/c/cb_vector.h"
 enum {
     COL_PATH_STATUS = 0,
     NUM_COLS_STATUS

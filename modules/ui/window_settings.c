@@ -2,8 +2,8 @@
 #include <errno.h>
 #include <gtk/gtk.h>
 
-#include "../libs/sqlite/sqlite_util.h"
-#include "../util/c/cb_vector.h"
+#include <sqlite_util.h>
+#include <cb_vector.h>
 
 #define LOG_FILE "/home/linarcx/captain_ballard.log"
 

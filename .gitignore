@@ -1,8 +1,12 @@
 /.clangd/*
+
 /build/*
 /debug/*
+/garbage/*
 /release/*
-gede2.ini
-compile_commands.json
+
+/test/build/*
+
+/core/resources.c
 CMakeLists.txt.user
-TODO.md
+compile_commands.json

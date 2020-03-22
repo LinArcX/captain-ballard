@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include <libappindicator3-0.1/libappindicator/app-indicator.h>
 
-#include "../util/c/cb_file.h"
+#include <cb_file.h>
 #include "window_settings.h"
 
 void m_item_exit_selected(GtkMenuItem* menuitem, gpointer user_data)
