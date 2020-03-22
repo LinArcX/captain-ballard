@@ -7,6 +7,8 @@
 
 /test/build/*
 
+./core/resources.c
+
 /core/resources.c
 CMakeLists.txt.user
 compile_commands.json

@@ -1,25 +1,14 @@
-add_library(
-    libgit
-    libgit/git_common.c
-    libgit/git_common.h)
-target_include_directories(libgit PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/libgit")
-
 FIND_PACKAGE(PkgConfig REQUIRED)
 PKG_CHECK_MODULES(LIBGIT2 REQUIRED libgit2)
-target_link_libraries(libgit ${LIBGIT2_LIBRARIES})
-target_include_directories(libgit PUBLIC ${LIBGIT2_INCLUDE_DIRS})
-target_compile_options(libgit PUBLIC ${LIBGIT2_CFLAGS_OTHER})
 
-
-#target_compile_options(libgit PRIVATE ${LIBGIT2_CFLAGS_OTHER})
-#target_link_libraries(libgit PRIVATE ${LIBGIT2_LIBRARIES})
-
-#PKG_CHECK_MODULES(libgit REQUIRED libgit2)
-#target_include_directories(libgit PUBLIC ${LIBGIT2_INCLUDE_DIRS})
-
-#target_link_libraries(libgit PUBLIC ${LIBGIT2_LIBRARIES})
-#target_include_directories(libgit PUBLIC ${LIBGIT2_INCLUDE_DIRS})
-#target_compile_options(libgit PUBLIC ${LIBGIT2_CFLAGS_OTHER})
+add_library(
+    giti
+    giti/git_common.c
+    giti/git_common.h)
+target_include_directories(giti PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/giti")
+target_link_libraries(giti ${LIBGIT2_LIBRARIES})
+target_include_directories(giti PUBLIC ${LIBGIT2_INCLUDE_DIRS})
+target_compile_options(giti PUBLIC ${LIBGIT2_CFLAGS_OTHER})
 
 add_library(
     util
@@ -59,3 +48,16 @@ target_compile_options(ui PUBLIC ${GTK3_CFLAGS_OTHER})
 
 target_link_libraries(ui PUBLIC sqlite)
 target_link_libraries(ui PUBLIC util)
+
+#pkg_check_modules(LIBGIT2 REQUIRED IMPORTED_TARGET giti)
+#libgit2-glib-1.0   libgit2
+
+#target_compile_options(libgit PRIVATE ${LIBGIT2_CFLAGS_OTHER})
+#target_link_libraries(libgit PRIVATE ${LIBGIT2_LIBRARIES})
+
+#PKG_CHECK_MODULES(libgit REQUIRED libgit2)
+#target_include_directories(libgit PUBLIC ${LIBGIT2_INCLUDE_DIRS})
+
+#target_link_libraries(libgit PUBLIC ${LIBGIT2_LIBRARIES})
+#target_include_directories(libgit PUBLIC ${LIBGIT2_INCLUDE_DIRS})
+#target_compile_options(libgit PUBLIC ${LIBGIT2_CFLAGS_OTHER})

@@ -1,50 +1,69 @@
-with import <nixpkgs> {};
+let
+  unstable = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz) {  };
+  pkgs = import <nixpkgs> {};
+in
+  pkgs.clangStdenv.mkDerivation rec {
+    pname   = "captain-ballard";
+    version = "1.0.0";
+    name    = "${pname}${version}";
 
-clangStdenv.mkDerivation rec {
-  pname   = "captain-ballard";
-  version = "1.0.0";
-  name    = "${pname}${version}";
+    nativeBuildInputs = [
+      pkgs.pkg-config
+      pkgs.cmake
+    ];
 
-  buildInputs = [
-    cmake
-    clang-tools
-    clang-analyzer
+    buildInputs = [
+      pkgs.clang-tools
+      pkgs.clang-analyzer
 
-    man
-    man-pages
-    clang-manpages
-    posix_man_pages
+      pkgs.man
+      pkgs.man-pages
+      pkgs.clang-manpages
+      pkgs.posix_man_pages
 
-    pkg-config
-    sqlite
-    libappindicator
+      unstable.libgit2
+      unstable.openssl
+      unstable.zlib
 
-    libgit2
-    openssl
-    zlib
+      pkgs.sqlite
+      pkgs.libappindicator
+      pkgs.fontconfig
 
-    gtk3
-    pcre
-    harfbuzz
-    xorg.libpthreadstubs
-    xorg.libXdmcp
-    utillinux
-    libselinux
-    libsepol
-    libxkbcommon
-    epoxy
-    at_spi2_core.dev
-    dbus
-    xorg.libXtst
-  ];
+      unstable.gtk3
+      unstable.pcre
+      unstable.harfbuzz
+      unstable.xorg.libpthreadstubs
+      unstable.xorg.libXdmcp
+      unstable.utillinux
+      unstable.libselinux
+      unstable.libsepol
+      unstable.libxkbcommon
+      unstable.epoxy
+      unstable.at_spi2_core.dev
+      unstable.dbus
+      unstable.xorg.libXtst
 
-  LOCALE_ARCHIVE="${glibcLocales}/lib/locale/locale-archive";
+      unstable.glib
+    ];
 
-  shellHook = ''
-    export NAME=${pname}
-    export CMAKE=${pkgs.cmake}/bin/cmake
-    export CLANG=${pkgs.clang}/bin/clang
-    export CLANGXX=${pkgs.clang}/bin/clang++
-    export CLANGD=${pkgs.clang-tools}/bin/clangd
-  '';
-}
+    FONTCONFIG_FILE = "${pkgs.fontconfig.out}/etc/fonts/fonts.conf";
+
+    shellHook = ''
+      export NAME=${pname}
+      export CMAKE=${pkgs.cmake}/bin/cmake
+      export CLANG=${pkgs.clang}/bin/clang
+      export CLANGXX=${pkgs.clang}/bin/clang++
+      export CLANGD=${pkgs.clang-tools}/bin/clangd
+    '';
+
+  }
+
+  #  fontDirectories = [
+  #    carlito dejavu_fonts
+  #    freefont_ttf xorg.fontmiscmisc
+  #    liberation_ttf_v1liberation_ttf_v2
+  #  ];
+
+    #LOCALE_ARCHIVE="${glibcLocales}/lib/locale/locale-archive";
+      #unstable.glib.dev
+      #unstable.libgit2-glib
