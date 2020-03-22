@@ -1,8 +1,19 @@
-# captain-ballard ![Language](https://img.shields.io/github/languages/top/LinArcX/captain-ballard.svg?style=flat-square) ![RepoSize](https://img.shields.io/github/repo-size/LinArcX/captain-ballard.svg?style=flat-square) ![Latest Tag](https://img.shields.io/github/tag/LinArcX/captain-ballard.svg?colorB=green&style=flat-square)
+## captain-ballard
 A git-aware app that protects your git-based projects before it's too late :)
 
-## Preview
-!["gnulium"](./shots/1.0.0/status.png "captain-ballard")
+<h4 align="center">
+    <img src="assets/appconf/captain-ballard.svg" align="center" width="100"/>
+</h4>
+
+<h4 align="center">
+    <img src="https://img.shields.io/travis/LinArcX/captain-ballard"/>  <img src="https://img.shields.io/github/tag/LinArcX/captain-ballard.svg?colorB=green"/>  <img src="https://img.shields.io/github/repo-size/LinArcX/captain-ballard.svg"/>  <img src="https://img.shields.io/github/languages/top/LinArcX/captain-ballard.svg"/>
+</h4>
+
+<h1 align="center">
+    <a href="https://gist.githubusercontent.com/LinArcX/c8e9bc4eec041116639293abb011a9b0/raw/4db84504fc1e97a8c897cceccbfa3e50cbe73e6c/captain-ballard-1.0.0-status.png"><img src="https://gist.githubusercontent.com/LinArcX/c8e9bc4eec041116639293abb011a9b0/raw/4db84504fc1e97a8c897cceccbfa3e50cbe73e6c/captain-ballard-1.0.0-status.png"></a>
+    <br/>
+    <h4 align="center">List of all projects that captain-ballard are watching. <a href="https://github.com/LinArcX/captain-ballard/issues/1">[more]</a></h4>
+</h1>
 
 ## A long time ago..
 I had many projects on my computer some of which were managed by git. After a couple of months, I accidentally lost all of my data and projects.
@@ -13,68 +24,46 @@ Watches __.git__ directories on your computer and periodically reports the lates
 
 You can adjust the interval as most convenient for you.
 
-### [Void](https://github.com/void-linux/void-packages/pull/14916)
-`sudo xbps-install captain-ballard`
 
-### [Arch](https://aur.archlinux.org/packages/captain-ballard/)
-`sudo trizen -S captain-ballard`
+## Installation
+### Void
+`sudo xbps-install -S captain-ballard`
+
+### Arch
+- git version
+
+`trizen -S captain-ballard-git`
+
+- release version
+
+`trizen -S captain-ballard`
 
 ### Build From Source
-2. Install these dependencies first:
+First Install these dependencies first:
 
-|Dependencies||
-|-----|:-----:|
-|[cmake](https://www.archlinux.org/packages/extra/x86_64/cmake/)
-|[pkg-config](https://www.archlinux.org/packages/core/x86_64/pkgconf/)
-|[gtk+3-devel](https://www.archlinux.org/packages/extra/x86_64/gtk3/)
-|[glib-devel](https://www.archlinux.org/packages/core/x86_64/glib2/)
-|[sqlite-devel](https://www.archlinux.org/packages/core/x86_64/sqlite/)
-|[libgit2-devel](https://www.archlinux.org/packages/extra/x86_64/libgit2/)
-|[libappindicator-devel](https://www.archlinux.org/packages/community/x86_64/libappindicator-gtk3/)
+#### Dependencies
+build dependencies:
+- cmake
+- pkg-config
 
-3. clone the repo:
+runtime dependencies:
+- gtk+3
+- glib
+- sqlite
+- libgit2
+- libappindicator
 
-    `git clone https://github.com/LinArcX/captain-ballard/`
+Then clone and build the project:
 
-4. go to cloned directory and make the project with qmake build tools:
+```
+git clone https://github.com/LinArcX/captain-ballard/
+cd captain-ballard; mkdir build; cd build
+cmake ..; make
+```
 
-    `cd captain-ballard`
+And finally, run it:
 
-    `mkdir build; cd build/`
-
-    `cmake -DCMAKE_BUILD_TYPE=Release ../`
-
-    `make`
-
-5. run the application:
-
-    `../release/captain-ballard`
-
-
-## Contributing
-![Open PR](https://img.shields.io/github/issues-pr-raw/LinArcX/captain-ballard.svg?style=flat-square) ![Closed PR](https://img.shields.io/github/issues-pr-closed/LinArcX/captain-ballard.svg?style=flat-square)
-1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :D
-
-
-## Bugs
-![Open Issues](https://img.shields.io/github/issues-raw/LinArcX/captain-ballard.svg?style=flat-square) ![Issues](https://img.shields.io/github/issues-closed-raw/LinArcX/captain-ballard.svg?style=flat-square)
-
-Bugs should be reported [here](https://github.com/LinArcX/captain-ballard/issues) on the Github issues page.
-
-
-## Credits
-E-Mail:linarcx@gmail.com
-
-<h1 align="center">
-	<img width="200" src="./util/icons/captain.svg" alt="captain-ballard">
-	<br>
-	<br>
-    <p2>captain-ballard</p2>
-</h1>
+`cd ..; build/captain-ballard`
 
 ## License
-![License](https://img.shields.io/github/license/LinArcX/Gnulium.svg?style=flat-square)
+![License](https://img.shields.io/github/license/LinArcX/captain-ballard.svg)
