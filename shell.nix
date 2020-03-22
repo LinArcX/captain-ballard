@@ -24,12 +24,18 @@ clangStdenv.mkDerivation rec {
     zlib
 
     gtk3
-    gtk3-x11
     pcre
     harfbuzz
     xorg.libpthreadstubs
     xorg.libXdmcp
-    mount
+    utillinux
+    libselinux
+    libsepol
+    libxkbcommon
+    epoxy
+    at_spi2_core.dev
+    dbus
+    xorg.libXtst
   ];
 
   LOCALE_ARCHIVE="${glibcLocales}/lib/locale/locale-archive";
