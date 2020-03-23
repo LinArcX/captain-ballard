@@ -1,61 +1,61 @@
 let
-  unstable = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz) {};
   pkgs = import <nixpkgs> {};
+  unstable = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz) {};
+  pkgs-2020-03-23 = import (fetchTarball https://github.com/NixOS/nixpkgs/archive/793c1b5c72abbfed2f98add0811a022fc713dbf3.tar.gz) {};
 in
-  pkgs.clangStdenv.mkDerivation rec {
+  pkgs-2020-03-23.clangStdenv.mkDerivation rec {
     pname   = "captain-ballard";
     version = "1.0.0";
     name    = "${pname}${version}";
 
     nativeBuildInputs = [
       pkgs.pkg-config
-      pkgs.cmake
+      unstable.cmake
     ];
 
     buildInputs = [
-      pkgs.lldb
-      pkgs.clang-tools
-      pkgs.clang-analyzer
+      pkgs-2020-03-23.lldb
+      pkgs-2020-03-23.clang-tools
+      pkgs-2020-03-23.clang-analyzer
 
-      pkgs.man
-      pkgs.man-pages
-      pkgs.clang-manpages
-      pkgs.posix_man_pages
+      pkgs-2020-03-23.man
+      pkgs-2020-03-23.man-pages
+      pkgs-2020-03-23.clang-manpages
+      pkgs-2020-03-23.posix_man_pages
 
-      unstable.libgit2
-      unstable.openssl
-      unstable.zlib
+      pkgs-2020-03-23.libgit2
+      pkgs-2020-03-23.openssl
+      pkgs-2020-03-23.zlib
 
-      pkgs.sqlite
-      pkgs.libappindicator
-      pkgs.fontconfig
+      pkgs-2020-03-23.sqlite
+      pkgs-2020-03-23.libappindicator
+      pkgs-2020-03-23.fontconfig
 
-      unstable.gtk3
-      unstable.pcre
-      unstable.harfbuzz
-      unstable.xorg.libpthreadstubs
-      unstable.xorg.libXdmcp
-      unstable.utillinux
-      unstable.libselinux
-      unstable.libsepol
-      unstable.libxkbcommon
-      unstable.epoxy
-      unstable.at_spi2_core.dev
-      unstable.dbus
-      unstable.xorg.libXtst
+      pkgs-2020-03-23.gtk3
+      pkgs-2020-03-23.pcre
+      pkgs-2020-03-23.harfbuzz
+      pkgs-2020-03-23.xorg.libpthreadstubs
+      pkgs-2020-03-23.xorg.libXdmcp
+      pkgs-2020-03-23.utillinux
+      pkgs-2020-03-23.libselinux
+      pkgs-2020-03-23.libsepol
+      pkgs-2020-03-23.libxkbcommon
+      pkgs-2020-03-23.epoxy
+      pkgs-2020-03-23.at_spi2_core.dev
+      pkgs-2020-03-23.dbus
+      pkgs-2020-03-23.xorg.libXtst
 
-      unstable.glib
+      pkgs-2020-03-23.glib
     ];
 
-    FONTCONFIG_FILE = "${pkgs.fontconfig.out}/etc/fonts/fonts.conf";
-    LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
+    FONTCONFIG_FILE = "${pkgs-2020-03-23.fontconfig.out}/etc/fonts/fonts.conf";
+    LOCALE_ARCHIVE = "${pkgs-2020-03-23.glibcLocales}/lib/locale/locale-archive";
 
     shellHook = ''
       export NAME=${pname}
-      export CMAKE=${pkgs.cmake}/bin/cmake
-      export CLANG=${pkgs.clang}/bin/clang
-      export CLANGXX=${pkgs.clang}/bin/clang++
-      export CLANGD=${pkgs.clang-tools}/bin/clangd
+      export CMAKE=${unstable.cmake}/bin/cmake
+      export CLANG=${pkgs-2020-03-23.clang}/bin/clang
+      export CLANGXX=${pkgs-2020-03-23.clang}/bin/clang++
+      export CLANGD=${pkgs-2020-03-23.clang-tools}/bin/clangd
     '';
-
   }
