@@ -1,7 +1,7 @@
 {
   "configurations": {
     "<name>: Launch": {
-      "adapter": "vscode-cpptools",
+      "adapter": "lldb-vscode",
       "configuration": {
         "name": "<name>",
         "type": "cppdbg",
@@ -10,17 +10,17 @@
         "cwd": "${workspaceRoot}",
         "externalConsole": true,
         "stopAtEntry": true,
-        "MIMode": "gdb"
+        "MIMode": "lldb"
       }
     },
     "<name>: Attach": {
-      "adapter": "vscode-cpptools",
+      "adapter": "lldb-vscode",
       "configuration": {
         "name": "<name>: Attach",
         "type": "cppdbg",
         "request": "attach",
         "program": "${workspaceRoot}/debug/${NAME}",
-        "MIMode": "gdb"
+        "MIMode": "lldb"
       }
     }
   }

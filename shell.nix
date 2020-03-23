@@ -1,5 +1,5 @@
 let
-  unstable = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz) {  };
+  unstable = import (fetchTarball https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz) {};
   pkgs = import <nixpkgs> {};
 in
   pkgs.clangStdenv.mkDerivation rec {
@@ -13,6 +13,7 @@ in
     ];
 
     buildInputs = [
+      pkgs.lldb
       pkgs.clang-tools
       pkgs.clang-analyzer
 
