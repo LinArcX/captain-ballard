@@ -14,7 +14,7 @@ in
     ];
 
     buildInputs = [
-      pkgs-2020-03-23.lldb
+      pkgs-2020-03-23.lldb_9
       pkgs-2020-03-23.clang-tools
       pkgs-2020-03-23.clang-analyzer
 
@@ -57,5 +57,6 @@ in
       export CLANG=${pkgs-2020-03-23.clang}/bin/clang
       export CLANGXX=${pkgs-2020-03-23.clang}/bin/clang++
       export CLANGD=${pkgs-2020-03-23.clang-tools}/bin/clangd
+      export LLDB_VSCODE=${pkgs-2020-03-23.lldb_9}/bin/lldb-vscode
     '';
   }
