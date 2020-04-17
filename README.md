@@ -15,6 +15,8 @@ A git-aware app that protects your git-based projects before it's too late :)
     <h4 align="center">List of all projects that captain-ballard are watching. <a href="https://github.com/LinArcX/captain-ballard/issues/1">[more]</a></h4>
 </h1>
 
+# NO LONGER MAINTAINED. Looking for an alternaive? See: https://github.com/LinArcX/giti
+
 ## A long time ago..
 I had many projects on my computer some of which were managed by git. After a couple of months, I accidentally lost all of my data and projects.
 And this gave me a good motivation to start a project that monitors my projects and reports me the changes periodically.
