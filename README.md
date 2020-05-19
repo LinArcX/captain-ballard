@@ -67,5 +67,9 @@ And finally, run it:
 
 `cd ..; build/captain-ballard`
 
+## Donate
+- Monero: `48VdRG9BNePEcrUr6Vx6sJeVz6EefGq5e2F5S9YV2eJtd5uAwjJ7Afn6YeVTWsw6XGS6mXueLywEea3fBPztUbre2Lhia7e`
+<img src="assets/monero.png" align="center" />
+
 ## License
 ![License](https://img.shields.io/github/license/LinArcX/captain-ballard.svg)
